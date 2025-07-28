@@ -1,0 +1,80 @@
+# ================================================================= #
+#  Rhythmics Project .gitignore
+# ================================================================= #
+
+# -----------------
+# Secrets
+# NEVER commit secrets, API keys, or environment-specific files.
+# -----------------
+.env
+.env.*
+secrets.py
+
+# -----------------
+# Python / Django
+# -----------------
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Byte-code
+__pycache__/
+*.pyc
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Django media files
+/media/
+
+# Log files
+*.log
+logs/
+
+# -----------------
+# Node.js / Angular
+# -----------------
+# Dependencies
+/node_modules/
+
+# Build output
+/dist/
+/out-tsc/
+/bazel-out/
+
+# Caches
+/.angular/cache/
+.sass-cache/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Other
+/coverage/
+/tmp/
+
+# ---------------------------
+# IDE & Editor Configuration
+# ---------------------------
+# JetBrains: .idea
+.idea/
+
+# VS Code
+.vscode/*
+# BUT, allow sharing common settings with the team
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+.history/
+
+# ---------------------------
+# System / OS Files
+# ---------------------------
+.DS_Store
+Thumbs.db
