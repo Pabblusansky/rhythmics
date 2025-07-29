@@ -1,0 +1,15 @@
+<div *ngIf="userProfile; else loading">
+  <h1>Hello, {{ userProfile.display_name }}!</h1>
+  
+  <img *ngIf="userProfile.images && userProfile.images.length > 0" 
+       [src]="userProfile.images[0].url" 
+       alt="Avatar of {{ userProfile.display_name }}" 
+       width="100" 
+       style="border-radius: 50%;">
+
+  <p>Your email: {{ userProfile.email }}</p>
+</div>
+
+<ng-template #loading>
+  <p>Loading user profile...</p>
+</ng-template>
