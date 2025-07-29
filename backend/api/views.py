@@ -9,6 +9,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
 from .models import SpotifyToken
+from .utils import get_user_token 
 class SpotifyLogin(APIView):
     def get(self, request, *args, **kwargs):
         
@@ -82,16 +83,14 @@ class UserProfile(APIView):
         if not request.user.is_authenticated:
             return Response({"error": "Not authenticated"}, status=401)
         
-        try:
-            token = request.user.spotifytoken.access_token
-        except SpotifyToken.DoesNotExist:
-            return Response({"error": "Spotify token not found for this user"}, status=404)
+        token = get_user_token(request.user)
+        if not token:
+            return Response({"error": "Failed to get or refresh Spotify token"}, status=401)
 
         user_profile_url = 'https://api.spotify.com/v1/me'
         headers = {
             'Authorization': f'Bearer {token}'
         }
-        
         response = requests.get(user_profile_url, headers=headers)
         
         if response.status_code != 200:
@@ -104,11 +103,9 @@ class TopTracks(APIView):
         if not request.user.is_authenticated:
             return Response({"error": "Not authenticated"}, status=401)
         
-        try:
-            # TODO: Check if the token is expired and refresh it if necessary
-            token = request.user.spotifytoken.access_token
-        except SpotifyToken.DoesNotExist:
-            return Response({"error": "Spotify token not found for this user"}, status=404)
+        token = get_user_token(request.user)
+        if not token:
+            return Response({"error": "Failed to get or refresh Spotify token"}, status=401)
 
         spotify_api_url = 'https://api.spotify.com/v1/me/top/tracks'
         headers = {
