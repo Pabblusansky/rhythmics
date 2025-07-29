@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
   providedIn: 'root'
@@ -11,5 +12,9 @@ export class SpotifyService {
 
   getUserProfile() {
     return this.http.get(`${this.backendUrl}/me`, { withCredentials: true });
+  }
+
+  getTopTracks(): Observable<any> {
+    return this.http.get(`${this.backendUrl}/top-tracks`, { withCredentials: true });
   }
 }

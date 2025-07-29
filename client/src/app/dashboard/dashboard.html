@@ -13,3 +13,18 @@
 <ng-template #loading>
   <p>Loading user profile...</p>
 </ng-template>
+
+
+<h2>Your top-5 tracks from the last month:</h2>
+<div *ngIf="topTracks; else loadingTracks">
+  <ol>
+    <li *ngFor="let track of topTracks">
+      <img [src]="track.album.images[2].url" alt="album" width="40"> <!-- smallest cover -->
+      <strong>{{ track.name }}</strong> by {{ track.artists[0].name }}
+    </li>
+  </ol>
+</div>
+
+<ng-template #loadingTracks>
+  <p>Loading tracks...</p>
+</ng-template>

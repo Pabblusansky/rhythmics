@@ -14,6 +14,7 @@ import { SpotifyService } from '../services/spotify.service';
 })
 export class DashboardComponent implements OnInit {
   userProfile: any;
+  topTracks: any;
 
   constructor(private spotifyService: SpotifyService) { }
 
@@ -27,5 +28,10 @@ export class DashboardComponent implements OnInit {
         console.error('Error fetching user profile:', error);
       }
     );
+
+    this.spotifyService.getTopTracks().subscribe(data => {
+      console.log('Топ треки:', data.items); 
+      this.topTracks = data.items;
+    });
   }
 }
