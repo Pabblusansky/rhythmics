@@ -1,8 +1,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
-import { SpotifyService } from '../services/spotify.service';
-import { TopGenresChartComponent } from '../components/charts/top-genres-chart/top-genres-chart';
+import { SpotifyService } from '../../services/spotify.service';
+import { TopGenresChartComponent } from '../../components/charts/top-genres-chart/top-genres-chart';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
