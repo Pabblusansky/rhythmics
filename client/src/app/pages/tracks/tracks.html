@@ -1,0 +1,56 @@
+<div class="tracks-container">
+  <div class="header-section">
+    <h1 class="page-title">Your Top Tracks</h1>
+    <p class="page-subtitle">Discover your most played songs</p>
+  </div>
+  
+  <div class="controls-section">
+    <mat-button-toggle-group 
+      [(ngModel)]="selectedTimeRange" 
+      (change)="onTimeRangeChange($event)" 
+      class="time-range-toggle"
+      aria-label="Time Range">
+      <mat-button-toggle value="short_term">Last Month</mat-button-toggle>
+      <mat-button-toggle value="medium_term">Last 6 Months</mat-button-toggle>
+      <mat-button-toggle value="long_term">All Time</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <div *ngIf="isLoading; else trackList" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Loading your tracks...</p>
+  </div>
+
+  <ng-template #trackList>
+    <div class="tracks-grid">
+      <div class="track-item" *ngFor="let track of topTracks; let i = index">
+        <div class="track-rank">{{ i + 1 }}</div>
+        
+        <div class="track-image" (click)="openInSpotify(track)">
+          <img [src]="track.album.images[1]?.url || track.album.images[0]?.url" 
+               [alt]="track.album.name"
+               loading="lazy">
+          <div class="play-overlay">
+            <mat-icon>play_arrow</mat-icon>
+          </div>
+        </div>
+        
+        <div class="track-info">
+          <h3 class="track-name">{{ track.name }}</h3>
+          <p class="track-artist">{{ getArtistNames(track.artists) }}</p>
+          <p class="track-album">{{ track.album.name }}</p>
+        </div>
+        
+        <div class="track-meta">
+          <div class="track-popularity">
+            <mat-icon>trending_up</mat-icon>
+            <span>{{ track.popularity }}%</span>
+          </div>
+          <div class="track-duration">{{ formatDuration(track.duration_ms) }}</div>
+        </div>
+        
+
+      </div>
+    </div>
+  </ng-template>
+</div>

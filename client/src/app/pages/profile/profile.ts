@@ -27,7 +27,7 @@ import { DeleteConfirmationDialog } from '../../components/dialogues/dialogue-de
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
-export class ProfileComponent implements OnInit {
+export class Profile implements OnInit {
   userProfile: any;
 
   constructor(

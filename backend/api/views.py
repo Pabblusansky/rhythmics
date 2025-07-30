@@ -109,16 +109,23 @@ class TopTracks(APIView):
         
         token = get_user_token(request.user)
         if not token:
-            return Response({"error": "Failed to get or refresh Spotify token"}, status=401)
+            return Response({"error": "Failed to get or refresh token"}, status=401)
+
+        time_range = request.query_params.get('time_range', 'short_term')
+        limit = request.query_params.get('limit', 10)
+
+        if time_range not in ['short_term', 'medium_term', 'long_term']:
+            time_range = 'short_term'
+        try:
+            limit = int(limit)
+            if not (1 <= limit <= 50):
+                limit = 10
+        except ValueError:
+            limit = 10
 
         spotify_api_url = 'https://api.spotify.com/v1/me/top/tracks'
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
-        params = {
-            'time_range': 'short_term', # short_term, medium_term, long_term
-            'limit': 5
-        }
+        headers = {'Authorization': f'Bearer {token}'}
+        params = {'time_range': time_range, 'limit': limit}
 
         response = requests.get(spotify_api_url, headers=headers, params=params)
 

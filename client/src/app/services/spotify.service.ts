@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
@@ -14,8 +14,15 @@ export class SpotifyService {
     return this.http.get(`${this.backendUrl}/me`, { withCredentials: true });
   }
 
-  getTopTracks(): Observable<any> {
-    return this.http.get(`${this.backendUrl}/top-tracks`, { withCredentials: true });
+  getTopTracks(timeRange: string = 'short_term', limit: number = 10): Observable<any> {
+    const params = new HttpParams()
+      .set('time_range', timeRange)
+      .set('limit', limit.toString());
+
+    return this.http.get(`${this.backendUrl}/top-tracks`, { 
+      withCredentials: true,
+      params: params
+    });
   }
         
   getTopGenresChartData(): Observable<any> {
