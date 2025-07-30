@@ -144,7 +144,7 @@ class TopGenres(APIView):
         headers = {'Authorization': f'Bearer {token}'}
         
         top_artists_url = 'https://api.spotify.com/v1/me/top/artists'
-        params = {'time_range': 'medium_term', 'limit': 20}
+        params = {'time_range': 'medium_term', 'limit': 50}
         response = requests.get(top_artists_url, headers=headers, params=params)
 
         if response.status_code != 200:
@@ -157,27 +157,43 @@ class TopGenres(APIView):
             all_genres.extend(artist.get('genres', []))
         
         if not all_genres:
-            return Response({"labels": [], "datasets": []})
+            return Response({"labels": [], "datasets": [], "total_genres": 0})
 
         genre_counts = Counter(all_genres)
-        top_10_genres = genre_counts.most_common(10)
-
-        labels = [genre for genre, count in top_10_genres]
-        data = [count for genre, count in top_10_genres]
-
+        
+        top_chart_genres = genre_counts.most_common(15)
+        
+        all_genres_list = list(genre_counts.items())
+        
         colors = [
-            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
-            '#FF9F40', '#E7E9ED', '#8DDF3C', '#F54E55', '#3C8DDF'
+            '#1DB954',  # Spotify Green
+            '#FF6B6B',  # Red
+            '#4ECDC4',  # Teal
+            '#45B7D1',  # Blue
+            '#96CEB4',  # Mint
+            '#FECA57',  # Yellow
+            '#FF9FF3',  # Pink
+            '#54A0FF',  # Light Blue
+            '#5F27CD',  # Purple
+            '#FF9F43',  # Orange
+            '#00D2D3',  # Cyan
+            '#C44569',  # Dark Pink
+            '#48CAE4',  # Sky Blue
+            '#F72585',  # Hot Pink
+            '#7209B7'   # Purple
         ]
-
+        
         chart_data = {
-            'labels': labels,
+            'labels': [genre for genre, count in top_chart_genres],
             'datasets': [{
-                'label': 'Top 10 Genres',
-                'data': data,
-                'backgroundColor': colors[:len(data)],
-                'borderColor': colors[:len(data)],
-            }]
+                'label': 'Top Genres',
+                'data': [count for genre, count in top_chart_genres],
+                'backgroundColor': colors[:len(top_chart_genres)],
+                'borderColor': '#2c2c2c',
+                'borderWidth': 2
+            }],
+            'total_genres': len(all_genres_list),
+            'all_genres_data': all_genres_list 
         }
         return Response(chart_data)
     

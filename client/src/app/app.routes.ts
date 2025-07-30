@@ -5,6 +5,7 @@ import { authGuard } from './guards/auth-guard';
 import { TopGenresChartComponent } from './components/charts/top-genres-chart/top-genres-chart';
 import { DashboardLayout } from './layout/dashboard-layout/dashboard-layout';
 import { Tracks } from './pages/tracks/tracks';
+import { Genres } from './pages/genres/genres';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, 
@@ -16,7 +17,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'profile', pathMatch: 'full' }, 
       { path: 'profile', component: Profile },
-      { path: 'genres', component: TopGenresChartComponent }, 
+      { path: 'genres', component: Genres }, 
     { path: 'tracks', component: Tracks },
       // TODO: Add more routes for dashboard features (artists, tracks, etc.)
     ]

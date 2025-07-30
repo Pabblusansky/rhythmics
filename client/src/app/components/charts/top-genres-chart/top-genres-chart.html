@@ -1,7 +1,21 @@
-<div *ngIf="pieChartData" style="width: 75%; margin: auto;">
-  <canvas baseChart 
-          [data]="pieChartData"
-          [type]="pieChartType"
-          [options]="pieChartOptions">
-  </canvas>
+<div class="chart-wrapper">
+  <div *ngIf="isLoading" class="chart-loading">
+    <div class="loading-spinner"></div>
+    <p>Loading your genres...</p>
+  </div>
+  
+  <div *ngIf="!isLoading && pieChartData" class="chart-content">
+    <div class="chart-container">
+      <canvas baseChart 
+              [data]="pieChartData"
+              type="doughnut"
+              [options]="pieChartOptions">
+      </canvas>
+    </div>
+  </div>
+  
+  <div *ngIf="!isLoading && !pieChartData" class="chart-error">
+    <p>No genre data available</p>
+    <p>Try listening to more music on Spotify!</p>
+  </div>
 </div>

@@ -1,1 +1,79 @@
-<p>genres works!</p>
+<div class="genres-container">
+  <div class="header-section">
+    <h1 class="page-title">Your Music Genres</h1>
+    <p class="page-subtitle">Explore your musical taste through data visualization</p>
+  </div>
+
+  <div class="content-grid">
+    <!-- Primary chart -->
+    <div class="chart-section">
+      <div class="chart-card">
+        <div class="card-header">
+          <h2>Top 15 Genres</h2>
+          <p>Based on your most listened artists</p>
+        </div>
+        <div class="chart-container">
+          <app-top-genres-chart></app-top-genres-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional statistics -->
+    <div class="stats-section">
+      <div class="stats-card">
+        <div class="stat-item">
+          <div class="stat-icon">🎵</div>
+          <div class="stat-info">
+            <h3>Total Genres</h3>
+            <p class="stat-number">{{ totalGenres }}</p>
+          </div>
+        </div>
+        
+        <div class="stat-item">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-info">
+            <h3>Top Genre</h3>
+            <p class="stat-text">{{ topGenre }}</p>
+          </div>
+        </div>
+        
+        <div class="stat-item">
+          <div class="stat-icon">🌟</div>
+          <div class="stat-info">
+            <h3>Diversity Score</h3>
+            <p class="stat-number">{{ diversityScore }}/10</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top genres list -->
+      <div class="genres-list-card">
+        <h3>Genre Breakdown</h3>
+        <div class="genres-list">
+          <div class="genre-item" *ngFor="let genre of topGenresList; let i = index">
+            <div class="genre-rank">{{ i + 1 }}</div>
+            <div class="genre-info">
+              <span class="genre-name">{{ genre.name }}</span>
+              <div class="genre-bar">
+                <div class="genre-progress" [style.width]="genre.percentage + '%'"></div>
+              </div>
+            </div>
+            <div class="genre-count">{{ genre.count }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insights section -->
+  <div class="insights-section">
+    <h2>Your Music Insights</h2>
+    <div class="insights-grid">
+      <div class="insight-card" *ngFor="let insight of musicInsights">
+        <div class="insight-icon">{{ insight.icon }}</div>
+        <h4>{{ insight.title }}</h4>
+        <p>{{ insight.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>
