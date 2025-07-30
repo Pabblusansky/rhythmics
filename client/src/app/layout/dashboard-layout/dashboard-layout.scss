@@ -1,0 +1,179 @@
+.dashboard-container {
+  height: 100vh;
+  width: 100%;
+  
+  .sidenav {
+    width: 280px;
+    background: linear-gradient(180deg, #121212 0%, #040404 100%);
+    color: #fff;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    overflow-y: hidden;
+    
+    .logo-section {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      
+      .logo-icon {
+        font-size: 2rem;
+        color: #1DB954; // Spotify Green
+        width: 2rem;
+        height: 2rem;
+      }
+      
+      .logo-text {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.5rem;
+        background: linear-gradient(45deg, #1DB954, #1ed760);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    }
+    
+    .nav-menu {
+      padding: 16px 0;
+      
+      .nav-item {
+        margin: 4px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        &.active-link {
+          background: linear-gradient(90deg, rgba(29, 185, 84, 0.2), rgba(29, 185, 84, 0.1));
+          border-left: 3px solid #1DB954;
+          
+          mat-icon {
+            color: #1DB954;
+          }
+        }
+        
+        mat-icon {
+          color: rgba(255, 255, 255, 0.7);
+          transition: color 0.3s ease;
+        }
+        
+        span {
+          color: rgba(255, 255, 255, 0.9);
+          font-weight: 500;
+        }
+      }
+    }
+    
+    .sidenav-footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 16px;
+      
+      .logout-btn {
+        width: 100%;
+        justify-content: flex-start;
+        color: rgba(255, 255, 255, 0.7);
+        padding: 12px 16px;
+        margin-top: 8px;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+          color: #fff;
+        }
+        
+        mat-icon {
+          margin-right: 12px;
+        }
+      }
+    }
+  }
+  
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #121212 100%);
+    
+    .top-toolbar {
+      background: rgba(18, 18, 18, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      z-index: 10;
+      
+      .menu-toggle {
+        color: #fff;
+        margin-right: 16px;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+      
+      .toolbar-spacer {
+        flex: 1 1 auto;
+      }
+      
+      .profile-btn {
+        color: #1DB954;
+        
+        &:hover {
+          background-color: rgba(29, 185, 84, 0.1);
+        }
+      }
+    }
+    
+    .page-content {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      background: inherit;
+      
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: rgba(29, 185, 84, 0.5);
+        border-radius: 4px;
+        
+        &:hover {
+          background: rgba(29, 185, 84, 0.7);
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .dashboard-container {
+    .sidenav {
+      width: 240px;
+    }
+    
+    .main-content {
+      .page-content {
+        padding: 16px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    .sidenav {
+      width: 100%;
+      position: fixed;
+    }
+  }
+}

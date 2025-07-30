@@ -4,13 +4,16 @@ from rest_framework.response import Response
 import os
 import requests
 import base64
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
 from .models import SpotifyToken
 from .utils import get_user_token 
 from collections import Counter 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
 class SpotifyLogin(APIView):
     def get(self, request, *args, **kwargs):
         
@@ -170,3 +173,28 @@ class TopGenres(APIView):
             }]
         }
         return Response(chart_data)
+    
+@method_decorator(csrf_exempt, name='dispatch')   
+class LogoutUser(APIView):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return Response({"status": "Successfully logged out"}, status=200)
+    
+    def post(self, request, *args, **kwargs):
+        logout(request)
+        return Response({"status": "Successfully logged out"}, status=200)
+    
+@method_decorator(csrf_exempt, name='dispatch')      
+class DeleteUserData(APIView):
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({"error": "Not authenticated"}, status=401)
+        
+        try:
+            logout(request)
+            request.user.delete()
+            return Response({"status": "User data deleted"}, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+
+    

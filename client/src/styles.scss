@@ -1,3 +1,27 @@
+// Angular Material theming for Material Design 3
+@use '@angular/material' as mat;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+// Define custom palettes using correct API
+$rhythmics-primary: mat.m2-define-palette(mat.$m2-green-palette, 500);
+$rhythmics-accent: mat.m2-define-palette(mat.$m2-grey-palette, 900);
+
+// Create dark theme using M2 API
+$rhythmics-dark-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $rhythmics-primary,
+    accent: $rhythmics-accent,
+  ),
+  typography: mat.m2-define-typography-config(),
+  density: 0,
+));
+
+// Apply the theme to Angular Material components
+@include mat.all-component-themes($rhythmics-dark-theme);
+
+// Global styles
 * {
   margin: 0;
   padding: 0;
@@ -10,6 +34,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 app-root {
@@ -18,4 +43,31 @@ app-root {
   padding: 0;
   width: 100%;
   min-height: 100vh;
+}
+
+.delete-dialog {
+  .mat-mdc-dialog-container {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+  }
+  
+  .mat-mdc-dialog-surface {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 16px !important;
+  }
+}
+
+// Override Material Dialog backdrop
+.cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+// Remove default Material styles
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  background: transparent !important;
+  box-shadow: none !important;
 }

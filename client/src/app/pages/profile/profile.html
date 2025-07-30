@@ -1,1 +1,109 @@
-<p>profile works!</p>
+<div class="profile-container" *ngIf="userProfile; else loading">
+  <!-- Main Profile Card -->
+  <mat-card class="profile-main-card">
+    <mat-card-header class="profile-header">
+      <img 
+        mat-card-avatar 
+        [src]="userProfile.images[0]?.url || 'assets/default-avatar.png'" 
+        alt="User Avatar"
+        class="profile-avatar">
+      <mat-card-title class="profile-name">{{ userProfile.display_name }}</mat-card-title>
+      <mat-card-subtitle class="profile-email">{{ userProfile.email }}</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content class="profile-content">
+      <p class="welcome-text">
+        Welcome to Rhythmics! Discover your music insights and manage your profile settings below.
+      </p>
+      
+      <!-- Profile Stats -->
+      <div class="profile-stats">
+        <div class="stat-item">
+          <mat-icon class="stat-icon">music_note</mat-icon>
+          <div class="stat-details">
+            <h3>{{ userProfile.followers?.total || 0 }}</h3>
+            <p>Followers</p>
+          </div>
+        </div>
+        
+        <div class="stat-item">
+          <mat-icon class="stat-icon">public</mat-icon>
+          <div class="stat-details">
+            <h3>{{ userProfile.country || 'Unknown' }}</h3>
+            <p>Country</p>
+          </div>
+        </div>
+        
+        <div class="stat-item">
+          <mat-icon class="stat-icon">verified</mat-icon>
+          <div class="stat-details">
+            <h3>{{ userProfile.product || 'Free' }}</h3>
+            <p>Plan</p>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Account Management Section -->
+  <mat-card class="management-card">
+    <mat-card-header>
+      <div mat-card-avatar class="management-icon">
+        <mat-icon>settings</mat-icon>
+      </div>
+      <mat-card-title>Account Management</mat-card-title>
+      <mat-card-subtitle>Manage your data and account settings</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="management-actions">
+        <!-- Refresh Data Action -->
+        <div class="action-item">
+          <div class="action-info">
+            <h4>Refresh Data</h4>
+            <p>Update your latest Spotify statistics and preferences</p>
+          </div>
+          <button mat-raised-button color="primary" (click)="refreshData()">
+            <mat-icon>refresh</mat-icon>
+            Refresh
+          </button>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <!-- Privacy Settings -->
+        <div class="action-item">
+          <div class="action-info">
+            <h4>Privacy Settings</h4>
+            <p>Control how your data is used and displayed</p>
+          </div>
+          <button mat-stroked-button color="accent" (click)="openPrivacySettings()">
+            <mat-icon>privacy_tip</mat-icon>
+            Privacy
+          </button>
+        </div>
+        
+        <mat-divider></mat-divider>
+        
+        <!-- Danger Zone -->
+        <div class="action-item danger-zone">
+          <div class="action-info">
+            <h4>Delete Account</h4>
+            <p>Permanently remove all your data from our system</p>
+          </div>
+          <button mat-raised-button color="warn" (click)="deleteData()">
+            <mat-icon>delete_forever</mat-icon>
+            Delete Account
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<ng-template #loading>
+  <div class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Loading your profile...</p>
+  </div>
+</ng-template>

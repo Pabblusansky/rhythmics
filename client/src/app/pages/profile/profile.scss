@@ -1,0 +1,227 @@
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-main-card {
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.1), rgba(30, 215, 96, 0.05));
+  border: 1px solid rgba(29, 185, 84, 0.2);
+  
+  .profile-header {
+    padding: 24px;
+    
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border: 3px solid #1DB954;
+      box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+    }
+    
+    .profile-name {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #1DB954;
+      margin: 8px 0 4px 0;
+    }
+    
+    .profile-email {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+  
+  .profile-content {
+    padding: 0 24px 24px 24px;
+    
+    .welcome-text {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      
+      .stat-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 16px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+          transform: translateY(-2px);
+        }
+        
+        .stat-icon {
+          font-size: 1.5rem !important;
+          color: #1DB954;
+          background: rgba(29, 185, 84, 0.1);
+          border-radius: 50%;
+          padding: 12px;
+          width: 48px !important;
+          height: 48px !important;
+          display: flex;
+          align-items: center;
+          justify-content: center; 
+          flex-shrink: 0;
+        }
+        
+        .stat-details {
+          flex: 1; 
+          
+          h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.2; 
+          }
+          
+          p {
+            margin: 4px 0 0 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            line-height: 1.2;
+          }
+        }
+      }
+    }
+  }
+}
+
+.management-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  .management-icon {
+    background: rgba(255, 193, 7, 0.1) !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    
+    mat-icon {
+      color: #FFC107;
+      font-size: 1.5rem;
+      width: 24px;
+      height: 24px;
+    }
+  }
+  
+  .management-actions {
+    .action-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      
+      &.danger-zone {
+        background: rgba(244, 67, 54, 0.05);
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 16px;
+        border: 1px solid rgba(244, 67, 54, 0.2);
+      }
+      
+      .action-info {
+        flex: 1;
+        margin-right: 20px;
+        
+        h4 {
+          margin: 0 0 8px 0;
+          font-size: 1.1rem;
+          font-weight: 500;
+          color: #fff;
+        }
+        
+        p {
+          margin: 0;
+          color: rgba(255, 255, 255, 0.7);
+          line-height: 1.4;
+        }
+      }
+      
+      button {
+        min-width: 120px;
+        
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 24px;
+  
+  .loading-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .profile-main-card {
+    .profile-header {
+      padding: 16px;
+      
+      .profile-name {
+        font-size: 1.5rem;
+      }
+    }
+    
+    .profile-content {
+      padding: 0 16px 16px 16px;
+      
+      .profile-stats {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+  }
+  
+  .management-card {
+    .management-actions {
+      .action-item {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+        
+        .action-info {
+          margin-right: 0;
+        }
+        
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
