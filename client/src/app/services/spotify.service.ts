@@ -17,4 +17,9 @@ export class SpotifyService {
   getTopTracks(): Observable<any> {
     return this.http.get(`${this.backendUrl}/top-tracks`, { withCredentials: true });
   }
+        
+  getTopGenresChartData(): Observable<any> {
+    return this.http.get(`${this.backendUrl}/top-genres`, { withCredentials: true });
+  }
+    
 }

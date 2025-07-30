@@ -10,6 +10,7 @@ from datetime import timedelta
 from django.contrib.auth.models import User
 from .models import SpotifyToken
 from .utils import get_user_token 
+from collections import Counter 
 class SpotifyLogin(APIView):
     def get(self, request, *args, **kwargs):
         
@@ -122,3 +123,50 @@ class TopTracks(APIView):
             return Response({"error": "Failed to retrieve top tracks", "details": response.json()}, status=response.status_code)
         
         return Response(response.json())
+    
+
+class TopGenres(APIView):
+    def get(self, request, *args, **kwargs):
+        token = get_user_token(request.user)
+        if not token:
+            return Response({"error": "Token not available"}, status=401)
+
+        headers = {'Authorization': f'Bearer {token}'}
+        
+        top_artists_url = 'https://api.spotify.com/v1/me/top/artists'
+        params = {'time_range': 'medium_term', 'limit': 20}
+        response = requests.get(top_artists_url, headers=headers, params=params)
+
+        if response.status_code != 200:
+            return Response({"error": "Failed to get top artists"}, status=response.status_code)
+
+        artists = response.json().get('items', [])
+        
+        all_genres = []
+        for artist in artists:
+            all_genres.extend(artist.get('genres', []))
+        
+        if not all_genres:
+            return Response({"labels": [], "datasets": []})
+
+        genre_counts = Counter(all_genres)
+        top_10_genres = genre_counts.most_common(10)
+
+        labels = [genre for genre, count in top_10_genres]
+        data = [count for genre, count in top_10_genres]
+
+        colors = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#E7E9ED', '#8DDF3C', '#F54E55', '#3C8DDF'
+        ]
+
+        chart_data = {
+            'labels': labels,
+            'datasets': [{
+                'label': 'Top 10 Genres',
+                'data': data,
+                'backgroundColor': colors[:len(data)],
+                'borderColor': colors[:len(data)],
+            }]
+        }
+        return Response(chart_data)
