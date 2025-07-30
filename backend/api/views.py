@@ -190,11 +190,14 @@ class DeleteUserData(APIView):
         if not request.user.is_authenticated:
             return Response({"error": "Not authenticated"}, status=401)
         
+        user_to_delete = request.user
+        
         try:
             logout(request)
-            request.user.delete()
+            
+            user_to_delete.delete()
+            
             return Response({"status": "User data deleted"}, status=200)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
-
     
