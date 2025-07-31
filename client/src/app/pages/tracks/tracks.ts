@@ -7,6 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
+import { PrivacyNoticeComponent } from '../../components/privacy-notice/privacy-notice';
 
 @Component({
   selector: 'app-tracks',
@@ -18,7 +19,8 @@ import { FormsModule } from '@angular/forms';
     MatProgressSpinnerModule, 
     MatButtonModule,
     MatTooltipModule,
-    FormsModule
+    FormsModule,
+    PrivacyNoticeComponent
   ],
   templateUrl: './tracks.html',
   styleUrls: ['./tracks.scss']
@@ -27,11 +29,20 @@ export class Tracks implements OnInit {
   topTracks: any[] = [];
   selectedTimeRange = 'short_term';
   isLoading = false;
+  isPrivacyBlocked = false;
 
   constructor(private spotifyService: SpotifyService) { }
 
   ngOnInit(): void {
-    this.fetchTopTracks();
+    this.checkPrivacySettings();
+    if (!this.isPrivacyBlocked) {
+      this.fetchTopTracks();
+    }
+  }
+
+  private checkPrivacySettings(): void {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    this.isPrivacyBlocked = settings.showTopTracks === false;
   }
 
   fetchTopTracks(): void {
@@ -50,6 +61,15 @@ export class Tracks implements OnInit {
 
   onTimeRangeChange(event: any): void {
     this.selectedTimeRange = event.value;
+    this.fetchTopTracks();
+  }
+
+  enableTracks(): void {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    settings.showTopTracks = true;
+    localStorage.setItem('rhythmics_privacy_settings', JSON.stringify(settings));
+    
+    this.isPrivacyBlocked = false;
     this.fetchTopTracks();
   }
 

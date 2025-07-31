@@ -3,26 +3,38 @@
     <h1 class="page-title">Your Top Tracks</h1>
     <p class="page-subtitle">Discover your most played songs</p>
   </div>
-  
-  <div class="controls-section">
-    <mat-button-toggle-group 
-      [(ngModel)]="selectedTimeRange" 
-      (change)="onTimeRangeChange($event)" 
-      class="time-range-toggle"
-      aria-label="Time Range">
-      <mat-button-toggle value="short_term">Last Month</mat-button-toggle>
-      <mat-button-toggle value="medium_term">Last 6 Months</mat-button-toggle>
-      <mat-button-toggle value="long_term">All Time</mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
 
-  <div *ngIf="isLoading; else trackList" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p class="loading-text">Loading your tracks...</p>
-  </div>
+  <!-- Privacy Notice -->
+  <app-privacy-notice 
+    *ngIf="isPrivacyBlocked" 
+    title="Top Tracks"
+    message="Your top tracks are hidden for privacy. Enable them to see your most played songs, detailed analytics, and listening patterns across different time periods."
+    (enableClick)="enableTracks()">
+  </app-privacy-notice>
 
-  <ng-template #trackList>
-    <div class="tracks-grid">
+  <!-- Normal content when not blocked -->
+  <div *ngIf="!isPrivacyBlocked">
+    <!-- Time Range Controls -->
+    <div class="controls-section">
+      <mat-button-toggle-group 
+        [(ngModel)]="selectedTimeRange" 
+        (change)="onTimeRangeChange($event)" 
+        class="time-range-toggle"
+        aria-label="Time Range">
+        <mat-button-toggle value="short_term">Last 4 Weeks</mat-button-toggle>
+        <mat-button-toggle value="medium_term">Last 6 Months</mat-button-toggle>
+        <mat-button-toggle value="long_term">All Time</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p class="loading-text">Loading your top tracks...</p>
+    </div>
+
+    <!-- Tracks Grid -->
+    <div *ngIf="!isLoading && topTracks.length > 0" class="tracks-grid">
       <div class="track-item" *ngFor="let track of topTracks; let i = index">
         <div class="track-rank">{{ i + 1 }}</div>
         
@@ -52,5 +64,12 @@
 
       </div>
     </div>
-  </ng-template>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && topTracks.length === 0" class="empty-state">
+      <mat-icon>music_off</mat-icon>
+      <h3>No tracks found</h3>
+      <p>Try listening to more music and come back later!</p>
+    </div>
+  </div>
 </div>

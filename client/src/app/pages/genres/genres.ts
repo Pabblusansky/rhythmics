@@ -4,6 +4,7 @@ import { TopGenresChartComponent } from '../../components/charts/top-genres-char
 import { SpotifyService } from '../../services/spotify.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { PrivacyNoticeComponent } from '../../components/privacy-notice/privacy-notice'; // Add this
 
 interface GenreData {
   name: string;
@@ -24,7 +25,8 @@ interface MusicInsight {
     CommonModule, 
     TopGenresChartComponent,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
+    PrivacyNoticeComponent // Add this
   ],
   templateUrl: './genres.html',
   styleUrl: './genres.scss'
@@ -38,10 +40,31 @@ export class Genres implements OnInit {
   diversityScore = 0;
   musicInsights: MusicInsight[] = [];
   isLoading = true;
+  isPrivacyBlocked = false; // Add this
 
   constructor(private spotifyService: SpotifyService) {}
 
   ngOnInit(): void {
+    this.checkPrivacySettings();
+    if (!this.isPrivacyBlocked) {
+      this.fetchGenresData();
+    } else {
+      this.isLoading = false;
+    }
+  }
+
+  private checkPrivacySettings(): void {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    this.isPrivacyBlocked = settings.showGenreAnalytics === false;
+  }
+
+  enableGenres(): void {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    settings.showGenreAnalytics = true;
+    localStorage.setItem('rhythmics_privacy_settings', JSON.stringify(settings));
+    
+    this.isPrivacyBlocked = false;
+    this.isLoading = true;
     this.fetchGenresData();
   }
 

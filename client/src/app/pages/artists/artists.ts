@@ -7,6 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
+import { PrivacyNoticeComponent } from '../../components/privacy-notice/privacy-notice';
 
 interface Artist {
   id: string;
@@ -29,7 +30,8 @@ interface Artist {
     MatProgressSpinnerModule, 
     MatButtonModule,
     MatTooltipModule,
-    FormsModule
+    FormsModule,
+    PrivacyNoticeComponent
   ],
   templateUrl: './artists.html',
   styleUrls: ['./artists.scss']
@@ -38,11 +40,15 @@ export class Artists implements OnInit {
   topArtists: Artist[] = [];
   selectedTimeRange = 'medium_term';
   isLoading = false;
+  isPrivacyBlocked = false;
 
   constructor(private spotifyService: SpotifyService) { }
 
   ngOnInit(): void {
-    this.fetchTopArtists();
+    this.checkPrivacySettings();
+    if (!this.isPrivacyBlocked) {
+      this.fetchTopArtists();
+    }
   }
 
   fetchTopArtists(): void {
@@ -81,5 +87,19 @@ export class Artists implements OnInit {
 
   getGenreDisplay(genres: string[]): string {
     return genres.length > 0 ? genres.join(', ') : 'No genres available';
+  }
+
+  private checkPrivacySettings(): void {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    this.isPrivacyBlocked = settings.showTopArtists === false;
+  }
+
+  enableArtists(): void {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    settings.showTopArtists = true;
+    localStorage.setItem('rhythmics_privacy_settings', JSON.stringify(settings));
+    
+    this.isPrivacyBlocked = false;
+    this.fetchTopArtists();
   }
 }

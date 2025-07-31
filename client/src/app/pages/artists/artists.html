@@ -3,26 +3,38 @@
     <h1 class="page-title">Your Top Artists</h1>
     <p class="page-subtitle">Discover your most listened artists</p>
   </div>
-  
-  <div class="controls-section">
-    <mat-button-toggle-group 
-      [(ngModel)]="selectedTimeRange" 
-      (change)="onTimeRangeChange($event)" 
-      class="time-range-toggle"
-      aria-label="Time Range">
-      <mat-button-toggle value="short_term">Last Month</mat-button-toggle>
-      <mat-button-toggle value="medium_term">Last 6 Months</mat-button-toggle>
-      <mat-button-toggle value="long_term">All Time</mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
 
-  <div *ngIf="isLoading; else artistsList" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p class="loading-text">Loading your artists...</p>
-  </div>
+  <!-- Privacy Notice for Artists -->
+  <app-privacy-notice 
+    *ngIf="isPrivacyBlocked" 
+    title="Top Artists"
+    message="Your top artists are hidden for privacy. Enable them to see your most listened artists, detailed stats, popularity ratings, and follower counts across different time periods."
+    (enableClick)="enableArtists()">
+  </app-privacy-notice>
 
-  <ng-template #artistsList>
-    <div class="artists-grid">
+  <!-- Normal content when not blocked -->
+  <div *ngIf="!isPrivacyBlocked">
+    <!-- Time Range Controls -->
+    <div class="controls-section">
+      <mat-button-toggle-group 
+        [(ngModel)]="selectedTimeRange" 
+        (change)="onTimeRangeChange($event)" 
+        class="time-range-toggle"
+        aria-label="Time Range">
+        <mat-button-toggle value="short_term">Last Month</mat-button-toggle>
+        <mat-button-toggle value="medium_term">Last 6 Months</mat-button-toggle>
+        <mat-button-toggle value="long_term">All Time</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p class="loading-text">Loading your artists...</p>
+    </div>
+
+    <!-- Artists Grid -->
+    <div *ngIf="!isLoading && topArtists.length > 0" class="artists-grid">
       <div class="artist-card" *ngFor="let artist of topArtists; let i = index">
         <div class="artist-rank">{{ artist.rank }}</div>
         
@@ -51,8 +63,14 @@
             </div>
           </div>
         </div>
-        
       </div>
     </div>
-  </ng-template>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && topArtists.length === 0" class="empty-state">
+      <mat-icon>group_off</mat-icon>
+      <h3>No artists found</h3>
+      <p>Try listening to more music and come back later!</p>
+    </div>
+  </div>
 </div>

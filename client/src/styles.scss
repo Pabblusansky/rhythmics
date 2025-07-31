@@ -71,3 +71,13 @@ app-root {
   background: transparent !important;
   box-shadow: none !important;
 }
+
+// Custom styles for the privacy dialog
+.privacy-dialog-container {
+  .mat-mdc-dialog-container {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 16px !important;
+    padding: 0 !important;
+  }
+}

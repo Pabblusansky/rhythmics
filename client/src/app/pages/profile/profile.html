@@ -63,7 +63,7 @@
             <h4>Refresh Data</h4>
             <p>Update your latest Spotify statistics and preferences</p>
           </div>
-          <button mat-raised-button color="primary" (click)="refreshData()">
+          <button mat-raised-button (click)="refreshData()">
             <mat-icon>refresh</mat-icon>
             Refresh
           </button>
@@ -77,7 +77,7 @@
             <h4>Privacy Settings</h4>
             <p>Control how your data is used and displayed</p>
           </div>
-          <button mat-stroked-button color="accent" (click)="openPrivacySettings()">
+          <button mat-raised-button class="privacy-btn" (click)="openPrivacySettings()">
             <mat-icon>privacy_tip</mat-icon>
             Privacy
           </button>
@@ -91,7 +91,7 @@
             <h4>Delete Account</h4>
             <p>Permanently remove all your data from our system</p>
           </div>
-          <button mat-raised-button color="warn" (click)="deleteData()">
+          <button mat-raised-button (click)="deleteData()">
             <mat-icon>delete_forever</mat-icon>
             Delete Account
           </button>

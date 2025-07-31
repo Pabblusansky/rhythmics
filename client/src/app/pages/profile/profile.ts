@@ -9,7 +9,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { SpotifyService } from '../../services/spotify.service';
-import { DeleteConfirmationDialog } from '../../components/dialogues/dialogue-delete.component';
+import { DeleteConfirmationDialog } from '../../components/dialogue-delete/dialogue-delete.component';
+import { PrivacySettingsDialogComponent } from '../../components/dialogue-privacy-settings/dialogue-privacy-settings';
+import { PrivacySettings, DEFAULT_PRIVACY_SETTINGS } from '../../models/privacy-settings/privacy-settings.interface';
 
 @Component({
   selector: 'app-profile',
@@ -19,16 +21,15 @@ import { DeleteConfirmationDialog } from '../../components/dialogues/dialogue-de
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatDividerModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatDialogModule
+    MatDividerModule
   ],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
 export class Profile implements OnInit {
   userProfile: any;
+  userPrivacySettings: PrivacySettings = DEFAULT_PRIVACY_SETTINGS;
 
   constructor(
     private spotifyService: SpotifyService,
@@ -39,6 +40,7 @@ export class Profile implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
+    this.loadPrivacySettings();
   }
 
   loadUserProfile(): void {
@@ -54,12 +56,45 @@ export class Profile implements OnInit {
   }
 
   refreshData(): void {
+    console.log('Refreshing all data...');
+    
+    this.spotifyService.refreshAllData();
+    
     this.snackBar.open('Refreshing your data...', 'Close', { duration: 2000 });
+    
     this.loadUserProfile();
+    
+    setTimeout(() => {
+      this.snackBar.open('All data refreshed! Navigate to other pages to see fresh data.', 'Close', { duration: 3000 });
+    }, 2000);
   }
 
   openPrivacySettings(): void {
-    this.snackBar.open('Privacy settings coming soon!', 'Close', { duration: 3000 });
+    const dialogRef = this.dialog.open(PrivacySettingsDialogComponent, {
+      width: '650px',
+      maxWidth: '90vw',
+      data: { currentSettings: this.userPrivacySettings },
+      panelClass: 'privacy-dialog-container'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.userPrivacySettings = result;
+        this.savePrivacySettings(result);
+      }
+    });
+  }
+
+  private savePrivacySettings(settings: PrivacySettings): void {
+    localStorage.setItem('rhythmics_privacy_settings', JSON.stringify(settings));
+    console.log('Privacy settings saved:', settings);
+  }
+
+  private loadPrivacySettings(): void {
+    const saved = localStorage.getItem('rhythmics_privacy_settings');
+    if (saved) {
+      this.userPrivacySettings = { ...DEFAULT_PRIVACY_SETTINGS, ...JSON.parse(saved) };
+    }
   }
 
   deleteData(): void {

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
+import { tap } from 'rxjs/operators'; 
+import { CacheService } from './cache.service'; 
 
 @Injectable({
   providedIn: 'root'
@@ -8,13 +10,66 @@ import { Observable } from 'rxjs/internal/Observable';
 export class SpotifyService {
   private backendUrl = 'http://127.0.0.1:8000/api';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private cacheService: CacheService
+  ) { }
 
-  getUserProfile() {
-    return this.http.get(`${this.backendUrl}/me`, { withCredentials: true });
+  getUserProfile(): Observable<any> {
+    const cacheKey = 'user_profile';
+    
+    // Check cache first
+    const cached = this.cacheService.get(cacheKey);
+    if (cached) {
+      return new Observable(observer => {
+        observer.next(cached);
+        observer.complete();
+      });
+    }
+
+    // If not in cache, fetch from API
+    return this.http.get(`${this.backendUrl}/me`, { withCredentials: true }).pipe(
+      tap(data => {
+        // Cache for 6 hours
+        this.cacheService.set(cacheKey, data, 6);
+      })
+    );
+  }
+
+  private shouldShowTopTracks(): boolean {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    return settings.showTopTracks !== false;
+  }
+
+  private shouldShowTopArtists(): boolean {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    return settings.showTopArtists !== false;
+  }
+
+  private shouldShowGenreAnalytics(): boolean {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    return settings.showGenreAnalytics !== false;
   }
 
   getTopTracks(timeRange: string = 'short_term', limit: number = 10): Observable<any> {
+    if (!this.shouldShowTopTracks()) {
+      return new Observable(observer => {
+        observer.next({ items: [] });
+        observer.complete();
+      });
+    }
+
+    const cacheKey = `top_tracks_${timeRange}_${limit}`;
+    
+    // Check cache first
+    const cached = this.cacheService.get(cacheKey);
+    if (cached) {
+      return new Observable(observer => {
+        observer.next(cached);
+        observer.complete();
+      });
+    }
+
     const params = new HttpParams()
       .set('time_range', timeRange)
       .set('limit', limit.toString());
@@ -22,10 +77,33 @@ export class SpotifyService {
     return this.http.get(`${this.backendUrl}/top-tracks`, { 
       withCredentials: true,
       params: params
-    });
+    }).pipe(
+      tap(data => {
+        // Cache for 2 hours
+        this.cacheService.set(cacheKey, data, 2);
+      })
+    );
   }
         
   getTopArtists(timeRange: string = 'medium_term', limit: number = 50): Observable<any> {
+    if (!this.shouldShowTopArtists()) {
+      return new Observable(observer => {
+        observer.next({ items: [] });
+        observer.complete();
+      });
+    }
+
+    const cacheKey = `top_artists_${timeRange}_${limit}`;
+    
+    // Check cache first
+    const cached = this.cacheService.get(cacheKey);
+    if (cached) {
+      return new Observable(observer => {
+        observer.next(cached);
+        observer.complete();
+      });
+    }
+
     const params = new HttpParams()
       .set('time_range', timeRange)
       .set('limit', limit.toString());
@@ -33,11 +111,45 @@ export class SpotifyService {
     return this.http.get(`${this.backendUrl}/top-artists`, { 
       withCredentials: true,
       params: params
-    });
+    }).pipe(
+      tap(data => {
+        // Cache for 2 hours
+        this.cacheService.set(cacheKey, data, 2);
+      })
+    );
   }
   
   getTopGenresChartData(): Observable<any> {
-    return this.http.get(`${this.backendUrl}/top-genres`, { withCredentials: true });
+    if (!this.shouldShowGenreAnalytics()) {
+      return new Observable(observer => {
+        observer.next({ genres: [] });
+        observer.complete();
+      });
+    }
+
+    const cacheKey = 'top_genres_chart';
+    
+    // Check cache first
+    const cached = this.cacheService.get(cacheKey);
+    if (cached) {
+      return new Observable(observer => {
+        observer.next(cached);
+        observer.complete();
+      });
+    }
+
+    return this.http.get(`${this.backendUrl}/top-genres`, { withCredentials: true }).pipe(
+      tap(data => {
+        // Cache for 1 hour
+        this.cacheService.set(cacheKey, data, 1);
+      })
+    );
+  }
+
+  // Method to force refresh all data
+  refreshAllData(): void {
+    this.cacheService.clear();
+    console.log('All cached data cleared - fresh data will be fetched');
   }
       
   deleteUserData(): Observable<any> {
@@ -52,6 +164,8 @@ export class SpotifyService {
   }
   
   logout(): Observable<any> {
+    // Clear cache on logout
+    this.cacheService.clear();
     return this.http.get(`${this.backendUrl}/logout`, { withCredentials: true });
   }
 
