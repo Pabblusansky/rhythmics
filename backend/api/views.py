@@ -134,7 +134,64 @@ class TopTracks(APIView):
         
         return Response(response.json())
     
+class TopArtists(APIView):
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({"error": "Not authenticated"}, status=401)
+        
+        token = get_user_token(request.user)
+        if not token:
+            return Response({"error": "Failed to get or refresh token"}, status=401)
 
+        time_range = request.query_params.get('time_range', 'medium_term')
+        limit = request.query_params.get('limit', 50)
+
+        if time_range not in ['short_term', 'medium_term', 'long_term']:
+            time_range = 'medium_term'
+        try:
+            limit = int(limit)
+            if not (1 <= limit <= 50):
+                limit = 50
+        except ValueError:
+            limit = 50
+
+        spotify_api_url = 'https://api.spotify.com/v1/me/top/artists'
+        headers = {'Authorization': f'Bearer {token}'}
+        params = {'time_range': time_range, 'limit': limit}
+        response = requests.get(spotify_api_url, headers=headers, params=params)
+
+        if response.status_code != 200:
+            return Response({"error": "Failed to retrieve top artists", "details": response.json()}, status=response.status_code)
+        
+        # Processing the response
+        spotify_data = response.json()
+        processed_artists = []
+        
+        for index, item in enumerate(spotify_data.get('items', []), 1):
+            images = item.get('images', [])
+            image_url = None
+            if images:
+                if len(images) > 1:
+                    image_url = images[1].get('url')
+                else:
+                    image_url = images[0].get('url')
+            
+            processed_artists.append({
+                'id': item.get('id'),
+                'name': item.get('name'),
+                'image_url': image_url,
+                'popularity': item.get('popularity', 0),
+                'genres': item.get('genres', [])[:3],
+                'spotify_url': item.get('external_urls', {}).get('spotify'),
+                'followers': item.get('followers', {}).get('total', 0),
+                'rank': index
+            })
+        
+        return Response({
+            'items': processed_artists,
+            'total': len(processed_artists),
+            'time_range': time_range
+        })
 class TopGenres(APIView):
     def get(self, request, *args, **kwargs):
         token = get_user_token(request.user)

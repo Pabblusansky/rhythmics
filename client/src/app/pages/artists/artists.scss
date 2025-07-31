@@ -1,0 +1,255 @@
+.artists-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  min-height: calc(100vh - 120px);
+}
+
+.header-section {
+  margin-bottom: 32px;
+  text-align: center;
+
+  .page-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    background: linear-gradient(45deg, #1db954, #1ed760, #ff6b6b, #4ecdc4);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 8s ease-in-out infinite;
+  }
+
+  .page-subtitle {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.controls-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+
+  .time-range-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .mat-button-toggle {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+
+      &.mat-button-toggle-checked {
+        background: #1db954;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+      }
+
+      &:hover:not(.mat-button-toggle-checked) {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+
+  .loading-text {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.artists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  padding: 20px 0;
+
+  .artist-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+
+    &:hover {
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 40px rgba(29, 185, 84, 0.2);
+      border-color: rgba(29, 185, 84, 0.4);
+
+      .play-overlay {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .artist-image {
+        transform: scale(1.05);
+      }
+
+
+    }
+
+    .artist-rank {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(29, 185, 84, 0.9);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      z-index: 2;
+    }
+
+    .artist-image-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      cursor: pointer;
+
+      .artist-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      .play-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.8);
+        width: 60px;
+        height: 60px;
+        background: rgba(29, 185, 84, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(4px);
+
+        mat-icon {
+          color: #fff;
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+    }
+
+    .artist-info {
+      margin-bottom: 16px;
+
+      .artist-name {
+        margin: 0 0 8px 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.2;
+      }
+
+      .artist-genres {
+        margin: 0 0 12px 0;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.4;
+      }
+
+      .artist-stats {
+        display: flex;
+        gap: 16px;
+
+        .stat-item {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.8);
+
+          mat-icon {
+            font-size: 1rem;
+            width: 1rem;
+            height: 1rem;
+            color: #1db954;
+          }
+        }
+      }
+    }
+
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .artists-container {
+    padding: 16px;
+  }
+
+  .header-section {
+    .page-title {
+      font-size: 2.5rem;
+    }
+  }
+
+  .artists-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+
+    .artist-card {
+      padding: 16px;
+
+      .artist-image-container {
+        height: 160px;
+      }
+
+
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .artists-grid {
+    grid-template-columns: 1fr;
+    
+    .artist-card {
+      .artist-image-container {
+        height: 200px;
+      }
+    }
+  }
+}

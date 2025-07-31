@@ -25,6 +25,17 @@ export class SpotifyService {
     });
   }
         
+  getTopArtists(timeRange: string = 'medium_term', limit: number = 50): Observable<any> {
+    const params = new HttpParams()
+      .set('time_range', timeRange)
+      .set('limit', limit.toString());
+
+    return this.http.get(`${this.backendUrl}/top-artists`, { 
+      withCredentials: true,
+      params: params
+    });
+  }
+  
   getTopGenresChartData(): Observable<any> {
     return this.http.get(`${this.backendUrl}/top-genres`, { withCredentials: true });
   }
