@@ -5,7 +5,7 @@
 
 Welcome to the Rhythmics project! This is a full-stack web application designed to give you deep insights into your Spotify listening habits. Built from the ground up with a powerful Angular frontend and a robust Django (Python) backend, Rhythmics connects directly to your Spotify account to visualize the music that defines you.
 
-(GIF COMMING SOON)
+(GIF COMING SOON)
 # ✨ Features
 
 Rhythmics provides a rich, interactive, and personalized dashboard with a suite of analytical tools:
