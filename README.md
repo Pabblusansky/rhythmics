@@ -1,0 +1,170 @@
+![alt text](https://img.shields.io/badge/Angular-18.x-DD0031?logo=angular)
+![alt text](https://img.shields.io/badge/Django-5.x-092E20?logo=django) ![alt text](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python) ![alt text](https://img.shields.io/badge/License-MIT-yellow.svg) ![alt text](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
+
+# Rhythmics: Discover Your Music Like Never Before.
+
+Welcome to the Rhythmics project! This is a full-stack web application designed to give you deep insights into your Spotify listening habits. Built from the ground up with a powerful Angular frontend and a robust Django (Python) backend, Rhythmics connects directly to your Spotify account to visualize the music that defines you.
+
+(GIF COMMING SOON)
+# ✨ Features
+
+Rhythmics provides a rich, interactive, and personalized dashboard with a suite of analytical tools:
+
+📊 Dynamic Top Charts: View your top tracks and artists, with interactive filters for different time ranges:
+
+- Last Month (short_term)
+- Last 6 Months (medium_term)
+- All Time (long_term)
+
+📈 Genre Analysis: Discover your most listened-to genres with a beautiful, interactive doughnut chart. Get custom, data-driven "Music Insights" that describe your unique taste profile.
+
+🎧 Recently Played History: See a list of your last 50 listened tracks, complete with timestamps.
+
+🚀 High-Performance Caching: The frontend features a sophisticated caching system that provides a lightning-fast experience on subsequent visits, reducing load times and API calls.
+
+🔐 Privacy & Data Control: A dedicated privacy settings panel allows you to control what data is displayed and stored. Includes a secure Logout and a Delete My Data function that completely removes your user and token information from our database.
+
+🔒 Secure Authentication: Full, secure OAuth 2.0 authentication flow with Spotify, including automatic token refresh logic on the backend to ensure you stay logged in.
+
+📱 Responsive Design: A sleek, modern interface that looks great on both desktop and mobile devices.
+
+# 🚀 Live Demo & Deployment
+
+A live version of Rhythmics would be soon deployed and available for you to try!
+
+    Backend (Django): Deployed on Render.com
+
+Feel free to connect your Spotify account and explore your stats.
+Deployment Status & Known Limitations
+
+    Server Spin-Down (Cold Start): The backend is hosted on Render's free tier. If the server is inactive for 15 minutes, it will "spin down". The first request to an inactive server (e.g., login or fetching data) may experience a delay of 30-50 seconds while the instance wakes up. Subsequent requests will be fast. This is a characteristic of the free hosting plan.
+
+# 🛠️ Tech Stack
+
+Frontend:
+
+    Angular (v18+) & TypeScript
+
+    SCSS for styling
+
+    Angular Material for UI components
+
+    Chart.js with ng2-charts for data visualization
+
+    RxJS for reactive state management
+
+Backend:
+
+    Django & Python
+
+    Django REST Framework for building the API
+
+    SQLite for local development (PostgreSQL recommended for production)
+
+Development Tools:
+
+    npm & pip
+
+    concurrently for unified server startup
+
+    VS Code
+
+    Git
+
+# 🏃‍♂️ Getting Started
+
+Ready to run Rhythmics on your local machine? Here’s how to get set up.
+Prerequisites
+
+    Node.js: v18.x or higher
+
+    npm: v8 or higher (comes with Node.js)
+
+    Python: v3.8 or higher
+
+    Git
+
+1. Clone the Repository
+
+First, clone the project to your local machine.
+Generated bash
+
+ ```bash  
+git clone https://github.com/Pabblusansky/rhythmics.git
+cd rhythmics
+ ```
+    
+
+2. Setup Environment Variables (Backend)
+
+The backend requires a .env file in the root directory for secret keys.
+
+    Create a new file named .env in the root of the rhythmics/ folder.
+
+    Open .env and add the following. You can get your Spotify keys from the Spotify Developer Dashboard:
+```bash  
+# A long, random string for Django's security
+DJANGO_SECRET_KEY=your_very_long_and_super_secret_text_here
+
+# Your credentials from the Spotify Developer Dashboard
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+```
+
+3. Install All Dependencies
+
+This project is a monorepo. You'll need to install dependencies for both the Node.js environment and the Python environment.
+
+A) Install Node.js Dependencies:
+From the root directory (rhythmics/), run the install-all script. This will install dependencies for the root and for the Angular client.
+
+```bash  
+npm run install-all
+```
+
+    
+
+B) Install Python Dependencies:
+Navigate into the backend directory, create a virtual environment, activate it, and install the required packages.
+
+
+```bash       
+cd backend
+python -m venv .venv
+ ```
+
+```bash  
+Activate the environment:
+
+    On Windows (CMD): .\.venv\Scripts\activate.bat
+
+    On Windows (PowerShell): .\.venv\Scripts\activate.ps1
+
+    On macOS/Linux: source .venv/bin/activate
+```
+
+Install packages:
+
+
+```bash  
+pip install -r requirements.txt
+```
+
+    
+4. Run Everything!
+
+That's it! Now, navigate back to the root directory and run the dev script. This will start both the Django backend and the Angular frontend simultaneously.
+Generated bash
+
+```bash    
+# Make sure you are in the root rhythmics/ directory
+npm run dev
+```
+
+- The backend server will start on http://127.0.0.1:8000
+- The frontend application will be available at http://127.0.0.1:4200
+
+Open your browser and navigate to http://127.0.0.1:4200 to start using Rhythmics!
+# 📜 License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details.
