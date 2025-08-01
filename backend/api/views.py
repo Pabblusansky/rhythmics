@@ -20,7 +20,7 @@ class SpotifyLogin(APIView):
         auth_params = {
             'response_type': 'code',
             'client_id': os.getenv('SPOTIFY_CLIENT_ID'),
-            'scope': 'user-read-private user-read-email user-top-read playlist-read-private',
+            'scope': 'user-read-private user-read-email user-top-read playlist-read-private user-read-recently-played user-read-playback-state',
             'redirect_uri': 'http://127.0.0.1:8000/api/auth/spotify/callback'
         }
 
@@ -281,3 +281,117 @@ class DeleteUserData(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=500)
     
+class RecentlyPlayed(APIView):
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({"error": "Not authenticated"}, status=401)
+        
+        token = get_user_token(request.user)
+        if not token:
+            return Response({"error": "Failed to get or refresh token"}, status=401)
+
+        spotify_api_url = 'https://api.spotify.com/v1/me/player/recently-played'
+        headers = {'Authorization': f'Bearer {token}'}
+        params = {
+            'limit': 50,  
+            'before': None  
+        }
+
+        response = requests.get(spotify_api_url, headers=headers, params=params)
+        
+        if response.status_code != 200:
+            return Response({"error": "Failed to retrieve recently played", "details": response.json()}, status=response.status_code)
+        
+        spotify_data = response.json()
+        processed_tracks = []
+        
+        for item in spotify_data.get('items', []):
+            track = item.get('track', {})
+            played_at = item.get('played_at')  # utc
+            
+            images = track.get('album', {}).get('images', [])
+            image_url = None
+            if images:
+                if len(images) > 1:
+                    image_url = images[1].get('url') 
+                else:
+                    image_url = images[0].get('url')
+            
+            processed_tracks.append({
+                'id': track.get('id'),
+                'name': track.get('name'),
+                'artists': [{'name': artist.get('name')} for artist in track.get('artists', [])],
+                'album': {
+                    'name': track.get('album', {}).get('name'),
+                    'image_url': image_url
+                },
+                'duration_ms': track.get('duration_ms'),
+                'played_at': played_at,  # Played at time in UTC
+                'spotify_url': track.get('external_urls', {}).get('spotify'),
+                'popularity': track.get('popularity', 0)
+            })
+        
+        return Response({
+            'items': processed_tracks,
+            'total': len(processed_tracks)
+        })
+
+class CurrentlyPlaying(APIView):
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({"error": "Not authenticated"}, status=401)
+        
+        token = get_user_token(request.user)
+        if not token:
+            return Response({"error": "Failed to get or refresh token"}, status=401)
+
+        spotify_api_url = 'https://api.spotify.com/v1/me/player/currently-playing'
+        headers = {'Authorization': f'Bearer {token}'}
+
+        response = requests.get(spotify_api_url, headers=headers)
+        
+        # 204 = nothing playing
+        if response.status_code == 204:
+            return Response({"is_playing": False, "item": None})
+        
+        if response.status_code != 200:
+            return Response({"error": "Failed to retrieve currently playing", "details": response.text}, status=response.status_code)
+        
+        data = response.json()
+        
+        if not data.get('item'):
+            return Response({"is_playing": False, "item": None})
+            
+        track = data.get('item', {})
+        
+        # Process image
+        images = track.get('album', {}).get('images', [])
+        image_url = None
+        if images:
+            if len(images) > 1:
+                image_url = images[1].get('url')
+            else:
+                image_url = images[0].get('url')
+        
+        processed_track = {
+            'id': track.get('id'),
+            'name': track.get('name'),
+            'artists': [{'name': artist.get('name')} for artist in track.get('artists', [])],
+            'album': {
+                'name': track.get('album', {}).get('name'),
+                'image_url': image_url
+            },
+            'duration_ms': track.get('duration_ms'),
+            'progress_ms': data.get('progress_ms'),
+            'is_playing': data.get('is_playing', False),
+            'spotify_url': track.get('external_urls', {}).get('spotify'),
+            'popularity': track.get('popularity', 0)
+        }
+        
+        return Response({
+            "is_playing": data.get('is_playing', False),
+            "item": processed_track,
+            "device": data.get('device', {}),
+            "shuffle_state": data.get('shuffle_state', False),
+            "repeat_state": data.get('repeat_state', 'off')
+        })

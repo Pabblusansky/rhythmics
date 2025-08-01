@@ -146,6 +146,43 @@ export class SpotifyService {
     );
   }
 
+  
+  private shouldShowRecentlyPlayed(): boolean {
+    const settings = JSON.parse(localStorage.getItem('rhythmics_privacy_settings') || '{}');
+    return settings.showRecentlyPlayed !== false;
+  }
+
+  getRecentlyPlayed(forceRefresh: boolean = false): Observable<any> {
+    if (!this.shouldShowRecentlyPlayed()) {
+      return new Observable(observer => {
+        observer.next({ items: [] });
+        observer.complete();
+      });
+    }
+
+    const cacheKey = 'recently_played';
+    
+    if (!forceRefresh) {
+      const cached = this.cacheService.get(cacheKey);
+      if (cached) {
+        return new Observable(observer => {
+          observer.next(cached);
+          observer.complete();
+        });
+      }
+    }
+
+    return this.http.get(`${this.backendUrl}/recently-played`, { withCredentials: true }).pipe(
+      tap(data => {
+        this.cacheService.set(cacheKey, data, 0.033);
+      })
+    );
+  }
+  
+  getCurrentlyPlaying(): Observable<any> {
+    return this.http.get(`${this.backendUrl}/currently-playing`, { withCredentials: true });
+  }
+  
   // Method to force refresh all data
   refreshAllData(): void {
     this.cacheService.clear();

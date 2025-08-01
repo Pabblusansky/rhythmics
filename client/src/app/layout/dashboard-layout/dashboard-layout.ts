@@ -52,6 +52,11 @@ export class DashboardLayout {
       path: '/dashboard/artists', 
       icon: 'group', 
       label: 'Artists' 
+    },
+    {
+      path: '/dashboard/recently-played',
+      icon: 'history',
+      label: 'Recently Played'
     }
   ];
 

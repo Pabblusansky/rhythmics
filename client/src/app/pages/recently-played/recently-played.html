@@ -1,0 +1,160 @@
+<div class="recently-played-container">
+  <div class="header-section">
+    <h1 class="page-title">Recently Played</h1>
+    <p class="page-subtitle">Your last 50 listened tracks from Spotify</p>
+  </div>
+
+  <!-- Privacy Notice -->
+  <app-privacy-notice 
+    *ngIf="isPrivacyBlocked" 
+    title="Recently Played"
+    message="Your recently played tracks are hidden for privacy. Enable them to see your last 50 listened tracks with timestamps, album info, and quick access to Spotify."
+    (enableClick)="enableRecentlyPlayed()">
+  </app-privacy-notice>
+
+  <!-- Normal content when not blocked -->
+  <div *ngIf="!isPrivacyBlocked">
+    
+    <!-- Currently Playing Section with Progress Bar -->
+    <div *ngIf="currentTrack && isCurrentlyPlaying" class="currently-playing-section">
+      <h2 class="now-playing-title">
+        <mat-icon>music_note</mat-icon>
+        Now Playing
+        <span class="auto-refresh-indicator" *ngIf="autoRefreshEnabled">
+          <mat-icon>sync</mat-icon>
+          {{ nextRefreshIn }}s
+        </span>
+      </h2>
+      
+      <div class="current-track-card">
+        <div class="track-image" (click)="openInSpotify(currentTrack)">
+          <img [src]="currentTrack.album.image_url" [alt]="currentTrack.album.name">
+          <div class="playing-indicator" [class.paused]="!isCurrentlyPlaying">
+            <mat-icon>{{ isCurrentlyPlaying ? 'play_arrow' : 'pause' }}</mat-icon>
+          </div>
+        </div>
+        
+        <div class="track-info">
+          <h3 class="track-name">{{ currentTrack.name }}</h3>
+          <p class="track-artist">{{ getArtistNames(currentTrack.artists) }}</p>
+          <p class="track-album">{{ currentTrack.album.name }}</p>
+          
+          <!-- Progress Bar -->
+          <div class="progress-section" *ngIf="currentTrack && currentTrack.duration_ms">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width]="getProgressPercentage() + '%'"></div>
+            </div>
+            <div class="progress-times">
+              <span class="current-time">{{ formatProgress() }}</span>
+              <span class="remaining-time">-{{ getRemainingTime() }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="track-actions">
+          <button mat-icon-button (click)="openInSpotify(currentTrack)" matTooltip="Open in Spotify">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <mat-divider *ngIf="currentTrack && isCurrentlyPlaying"></mat-divider>
+
+    <!-- Controls Section -->
+    <div class="controls-section">
+      <!-- Time Filter -->
+      <div class="filter-controls">
+        <h3 class="control-header">Filter by Time</h3> 
+        <mat-button-toggle-group 
+          [(ngModel)]="selectedTimeFilter" 
+          (change)="onTimeFilterChange($event)" 
+          class="time-filter-toggle"
+          aria-label="Time Filter">
+          <mat-button-toggle *ngFor="let filter of timeFilters" [value]="filter.value">
+            {{ filter.label }}
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+        
+        <div class="filter-info">
+          <span class="tracks-count">{{ getFilteredTracksCount() }} tracks shown</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button mat-raised-button class="refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+          <mat-icon>refresh</mat-icon>
+          Refresh
+        </button>
+        
+        <button mat-stroked-button 
+                class="auto-refresh-btn" 
+                [class.active]="autoRefreshEnabled"
+                (click)="toggleAutoRefresh()">
+          <mat-icon>{{ autoRefreshEnabled ? 'pause' : 'play_arrow' }}</mat-icon>
+          Auto Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p class="loading-text">Loading your recently played tracks...</p>
+    </div>
+
+    <!-- Recently Played List -->
+    <div *ngIf="!isLoading && filteredTracks.length > 0" class="tracks-list">
+      <div class="track-item" *ngFor="let track of filteredTracks; trackBy: trackByFn">
+        
+        <div class="track-image" (click)="openInSpotify(track)">
+          <img [src]="track.album.image_url" 
+               [alt]="track.album.name"
+               loading="lazy">
+          <div class="play-overlay">
+            <mat-icon>play_arrow</mat-icon>
+          </div>
+        </div>
+        
+        <div class="track-info">
+          <h3 class="track-name">{{ track.name }}</h3>
+          <p class="track-artist">{{ getArtistNames(track.artists) }}</p>
+          <p class="track-album">{{ track.album.name }}</p>
+        </div>
+        
+        <div class="track-meta">
+          <div class="played-time">
+            <mat-icon>access_time</mat-icon>
+            <span>{{ formatPlayedAt(track.played_at) }}</span>
+          </div>
+          <div class="track-duration">{{ formatDuration(track.duration_ms) }}</div>
+        </div>
+
+        <div class="track-actions">
+          <button mat-icon-button 
+                  (click)="openInSpotify(track)"
+                  matTooltip="Open in Spotify"
+                  class="spotify-btn">
+            <mat-icon>open_in_new</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredTracks.length === 0 && recentTracks.length === 0" class="empty-state">
+      <mat-icon>history</mat-icon>
+      <h3>No recent tracks found</h3>
+      <p>Try listening to some music on Spotify and come back!</p>
+    </div>
+
+    <!-- No Filtered Results -->
+    <div *ngIf="!isLoading && filteredTracks.length === 0 && recentTracks.length > 0" class="no-results-state">
+      <mat-icon>filter_list_off</mat-icon>
+      <h3>No tracks in selected time range</h3>
+      <p>Try selecting a different time filter</p>
+    </div>
+  </div>
+</div>

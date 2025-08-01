@@ -4,7 +4,7 @@ import { TopGenresChartComponent } from '../../components/charts/top-genres-char
 import { SpotifyService } from '../../services/spotify.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-import { PrivacyNoticeComponent } from '../../components/privacy-notice/privacy-notice'; // Add this
+import { PrivacyNoticeComponent } from '../../components/privacy-notice/privacy-notice';
 
 interface GenreData {
   name: string;
@@ -26,7 +26,7 @@ interface MusicInsight {
     TopGenresChartComponent,
     MatProgressSpinnerModule,
     MatIconModule,
-    PrivacyNoticeComponent // Add this
+    PrivacyNoticeComponent
   ],
   templateUrl: './genres.html',
   styleUrl: './genres.scss'
@@ -40,7 +40,7 @@ export class Genres implements OnInit {
   diversityScore = 0;
   musicInsights: MusicInsight[] = [];
   isLoading = true;
-  isPrivacyBlocked = false; // Add this
+  isPrivacyBlocked = false;
 
   constructor(private spotifyService: SpotifyService) {}
 
@@ -232,7 +232,7 @@ export class Genres implements OnInit {
       });
     }
 
-    // Insights по rock/metal
+    // Insights for rock/metal
     const rockGenres = this.topGenresList.filter(g => 
       g.name.toLowerCase().includes('rock') || 
       g.name.toLowerCase().includes('metal') ||

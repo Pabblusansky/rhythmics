@@ -178,14 +178,15 @@ export class CacheService {
 
   private getPrivacySettings(): PrivacySettings {
     const saved = localStorage.getItem('rhythmics_privacy_settings');
-    return saved ? JSON.parse(saved) : { 
+    return saved ? JSON.parse(saved) : {
       showTopTracks: true,
       showTopArtists: true,
       showGenreAnalytics: true,
       storeListeningHistory: true,
       shareWithFriends: false,
       publicProfile: false,
-      dataRetentionDays: 365
+      dataRetentionDays: 365,
+      showRecentlyPlayed: false
     };
   }
 

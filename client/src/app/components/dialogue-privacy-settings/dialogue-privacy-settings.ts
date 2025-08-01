@@ -59,7 +59,16 @@ import { CacheService } from '../../services/cache.service';
             </div>
             <mat-slide-toggle [(ngModel)]="settings.showGenreAnalytics" color="primary"></mat-slide-toggle>
           </div>
+
+          <div class="setting-item">
+            <div class="setting-info">
+              <label>Show Recently Played</label>
+              <p>Display your last 50 listened tracks from Spotify</p>
+            </div>
+            <mat-slide-toggle [(ngModel)]="settings.showRecentlyPlayed" color="primary"></mat-slide-toggle>
+          </div>
         </div>
+
 
         <!-- Data Storage Settings -->
         <div class="setting-group">
