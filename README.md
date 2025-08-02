@@ -149,6 +149,8 @@ SECRET_KEY=your_very_long_and_super_secret_text_here
 # Your credentials from the Spotify Developer Dashboard
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+# Very important to set the DEBUG flag for local development
+DEBUG=True
 ```
 
 3. Install All Dependencies

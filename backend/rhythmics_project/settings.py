@@ -146,7 +146,7 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 # ==============================================================================
 # Security settings for production
 # ==============================================================================
-if not DEBUG:
+if not DEBUG and RENDER_EXTERNAL_HOSTNAME:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SAMESITE = 'None'
