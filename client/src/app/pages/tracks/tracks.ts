@@ -121,7 +121,8 @@ export class Tracks implements OnInit, OnDestroy {
         this.topTracks = data.items || [];
         
         this.topTracks.forEach((track, index) => {
-          console.log(`Track ${index + 1}: ${track.name} - Preview: ${track.preview_url ? 'YES' : 'NO'}`);
+          // This is a simple check to see if the track has a preview URL, commented out because it's too noisy
+          // console.log(`Track ${index + 1}: ${track.name} - Preview: ${track.preview_url ? 'YES' : 'NO'}`);
         });
         
         this.isLoading = false;

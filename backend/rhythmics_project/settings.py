@@ -49,10 +49,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -120,10 +120,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS / CSRF Settings
 # ==============================================================================
 
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:4200').split(',')
-CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:4200').split(',')
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+    "http://127.0.0.1:4200",
+]
 
-CORS_ALLOW_CREDENTIALS = True
+if not DEBUG:
+    frontend_url = os.getenv('FRONTEND_URL')
+    if frontend_url:
+        CORS_ALLOWED_ORIGINS.append(frontend_url)
+
+CORS_ALLOW_CREDENTIALS = False
 
 CORS_ALLOWED_HEADERS = [
     'accept',
@@ -136,6 +143,8 @@ CORS_ALLOWED_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 # Session and CSRF settings
 SESSION_COOKIE_DOMAIN = None
