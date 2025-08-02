@@ -14,6 +14,9 @@ from collections import Counter
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SpotifyLogin(APIView):
     def get(self, request, *args, **kwargs):
@@ -21,8 +24,21 @@ class SpotifyLogin(APIView):
             redirect_uri = 'http://127.0.0.1:8000/api/auth/spotify/callback'
             frontend_url = 'http://127.0.0.1:4200'
         else:
-            redirect_uri = f'https://{os.getenv("RENDER_EXTERNAL_HOSTNAME", "your-backend.onrender.com")}/api/auth/spotify/callback'
-            frontend_url = os.getenv('FRONTEND_URL', 'https://your-frontend.netlify.app')
+            backend_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+            frontend_url = os.getenv('FRONTEND_URL')
+            
+            if not backend_hostname:
+                logger.error("RENDER_EXTERNAL_HOSTNAME not set in environment variables")
+                return Response({"error": "Server configuration error: RENDER_EXTERNAL_HOSTNAME not set"}, status=500)
+                
+            if not frontend_url:
+                logger.error("FRONTEND_URL not set in environment variables")
+                return Response({"error": "Server configuration error: FRONTEND_URL not set"}, status=500)
+            
+            redirect_uri = f'https://{backend_hostname}/api/auth/spotify/callback'
+        
+        logger.info(f"Using redirect_uri: {redirect_uri}")
+        logger.info(f"Using frontend_url: {frontend_url}")
         
         auth_params = {
             'response_type': 'code',
@@ -35,66 +51,105 @@ class SpotifyLogin(APIView):
         auth_url = f"https://accounts.spotify.com/authorize?{params_string}"
         
         return redirect(auth_url)
-    
+
 class SpotifyCallback(APIView):
     def get(self, request, *args, **kwargs):
-        auth_code = request.GET.get('code')
-        if not auth_code:
-            return Response({"error": "Authorization code not provided"}, status=400)
+        try:
+            auth_code = request.GET.get('code')
+            if not auth_code:
+                logger.error("Authorization code not provided")
+                return Response({"error": "Authorization code not provided"}, status=400)
 
-        if settings.DEBUG:
-            redirect_uri = 'http://127.0.0.1:8000/api/auth/spotify/callback'
-            frontend_url = 'http://127.0.0.1:4200'
-        else:
-            redirect_uri = f'https://{os.getenv("RENDER_EXTERNAL_HOSTNAME", "your-backend.onrender.com")}/api/auth/spotify/callback'
-            frontend_url = os.getenv('FRONTEND_URL', 'https://your-frontend.netlify.app')
+            if settings.DEBUG:
+                redirect_uri = 'http://127.0.0.1:8000/api/auth/spotify/callback'
+                frontend_url = 'http://127.0.0.1:4200'
+            else:
+                backend_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+                frontend_url = os.getenv('FRONTEND_URL')
+                
+                if not backend_hostname:
+                    logger.error("RENDER_EXTERNAL_HOSTNAME not set")
+                    return Response({"error": "Server configuration error: RENDER_EXTERNAL_HOSTNAME not set"}, status=500)
+                    
+                if not frontend_url:
+                    logger.error("FRONTEND_URL not set")
+                    return Response({"error": "Server configuration error: FRONTEND_URL not set"}, status=500)
+                
+                redirect_uri = f'https://{backend_hostname}/api/auth/spotify/callback'
 
-        token_url = 'https://accounts.spotify.com/api/token'
-        payload = {
-            'grant_type': 'authorization_code',
-            'code': auth_code,
-            'redirect_uri': redirect_uri
-        }
-        
-        client_id = os.getenv('SPOTIFY_CLIENT_ID')
-        client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
-        auth_header_str = f"{client_id}:{client_secret}"
-        auth_header_b64 = base64.b64encode(auth_header_str.encode()).decode()
-        headers = {'Authorization': f'Basic {auth_header_b64}', 'Content-Type': 'application/x-www-form-urlencoded'}
-        
-        token_response = requests.post(token_url, data=payload, headers=headers)
-        if token_response.status_code != 200:
-            return Response({"error": "Failed to retrieve access token", "details": token_response.json()}, status=token_response.status_code)
-        
-        token_data = token_response.json()
-        access_token = token_data.get('access_token')
-        refresh_token = token_data.get('refresh_token')
-        expires_in = token_data.get('expires_in')
+            logger.info(f"Processing callback with redirect_uri: {redirect_uri}")
 
-        user_info_url = 'https://api.spotify.com/v1/me'
-        user_headers = {'Authorization': f'Bearer {access_token}'}
-        user_response = requests.get(user_info_url, headers=user_headers)
-        user_data = user_response.json()
-        spotify_id = user_data.get('id')
-
-        django_user, created = User.objects.get_or_create(username=spotify_id)
-
-        expires_at = timezone.now() + timedelta(seconds=expires_in)
-        
-        SpotifyToken.objects.update_or_create(
-            user=django_user,
-            defaults={
-                'spotify_id': spotify_id,
-                'access_token': access_token,
-                'refresh_token': refresh_token,
-                'expires_at': expires_at,
+            token_url = 'https://accounts.spotify.com/api/token'
+            payload = {
+                'grant_type': 'authorization_code',
+                'code': auth_code,
+                'redirect_uri': redirect_uri
             }
-        )
+            
+            client_id = os.getenv('SPOTIFY_CLIENT_ID')
+            client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
+            
+            if not client_id or not client_secret:
+                logger.error("Spotify credentials not configured")
+                return Response({"error": "Server configuration error: Spotify credentials missing"}, status=500)
+            
+            auth_header_str = f"{client_id}:{client_secret}"
+            auth_header_b64 = base64.b64encode(auth_header_str.encode()).decode()
+            headers = {'Authorization': f'Basic {auth_header_b64}', 'Content-Type': 'application/x-www-form-urlencoded'}
+            
+            logger.info("Requesting token from Spotify")
+            token_response = requests.post(token_url, data=payload, headers=headers)
+            
+            if token_response.status_code != 200:
+                logger.error(f"Failed to get token: {token_response.status_code} - {token_response.text}")
+                return Response({
+                    "error": "Failed to retrieve access token", 
+                    "details": token_response.json()
+                }, status=token_response.status_code)
+            
+            token_data = token_response.json()
+            access_token = token_data.get('access_token')
+            refresh_token = token_data.get('refresh_token')
+            expires_in = token_data.get('expires_in')
 
-        #  LOGIN 
-        login(request, django_user)
+            user_info_url = 'https://api.spotify.com/v1/me'
+            user_headers = {'Authorization': f'Bearer {access_token}'}
+            user_response = requests.get(user_info_url, headers=user_headers)
+            
+            if user_response.status_code != 200:
+                logger.error(f"Failed to get user info: {user_response.status_code}")
+                return Response({"error": "Failed to retrieve user info"}, status=user_response.status_code)
+                
+            user_data = user_response.json()
+            spotify_id = user_data.get('id')
 
-        return redirect(f'{frontend_url}/dashboard')
+            if not spotify_id:
+                logger.error("No Spotify ID in user data")
+                return Response({"error": "Invalid user data"}, status=400)
+
+            django_user, created = User.objects.get_or_create(username=spotify_id)
+            logger.info(f"User {'created' if created else 'found'}: {spotify_id}")
+
+            expires_at = timezone.now() + timedelta(seconds=expires_in)
+            
+            SpotifyToken.objects.update_or_create(
+                user=django_user,
+                defaults={
+                    'spotify_id': spotify_id,
+                    'access_token': access_token,
+                    'refresh_token': refresh_token,
+                    'expires_at': expires_at,
+                }
+            )
+
+            login(request, django_user)
+            logger.info(f"User logged in successfully: {spotify_id}")
+
+            return redirect(f'{frontend_url}/dashboard')
+            
+        except Exception as e:
+            logger.error(f"Unexpected error in SpotifyCallback: {str(e)}", exc_info=True)
+            return Response({"error": "Internal server error"}, status=500)
 
 class UserProfile(APIView):
     def get(self, request, *args, **kwargs):
