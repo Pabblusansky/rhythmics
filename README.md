@@ -1,6 +1,7 @@
 ![alt text](https://img.shields.io/badge/Angular-18.x-DD0031?logo=angular)
 ![alt text](https://img.shields.io/badge/Django-5.x-092E20?logo=django) ![alt text](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python) ![alt text](https://img.shields.io/badge/License-MIT-yellow.svg) ![alt text](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
 
+![Rhythmics](README%20files/README.png)
 # Rhythmics: Discover Your Music Like Never Before.
 
 Welcome to the Rhythmics project! This is a full-stack web application designed to give you deep insights into your Spotify listening habits. Built from the ground up with a powerful Angular frontend and a robust Django (Python) backend, Rhythmics connects directly to your Spotify account to visualize the music that defines you.
