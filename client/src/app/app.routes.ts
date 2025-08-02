@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
 import { Profile } from './pages/profile/profile';
 import { authGuard } from './guards/auth-guard'; 
-import { TopGenresChartComponent } from './components/charts/top-genres-chart/top-genres-chart';
 import { DashboardLayout } from './layout/dashboard-layout/dashboard-layout';
 import { Tracks } from './pages/tracks/tracks';
 import { Genres } from './pages/genres/genres';

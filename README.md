@@ -30,12 +30,18 @@ Rhythmics provides a rich, interactive, and personalized dashboard with a suite 
 
 # 🚀 Live Demo & Deployment
 
-A live version of Rhythmics would be soon deployed and available for you to try!
+A live version of Rhythmics is available for you to try!
+https://rhythmics.netlify.app/home
 
-    Backend (Django): Deployed on Render.com
+Live version details:
+    
+- Frontend(Angular): Deployed on Netlify.com
+
+- Backend (Django): Deployed on Render.com
 
 Feel free to connect your Spotify account and explore your stats.
-Deployment Status & Known Limitations
+
+# ⚠️Deployment Status & Known Limitations
 
     Server Spin-Down (Cold Start): The backend is hosted on Render's free tier. If the server is inactive for 15 minutes, it will "spin down". The first request to an inactive server (e.g., login or fetching data) may experience a delay of 30-50 seconds while the instance wakes up. Subsequent requests will be fast. This is a characteristic of the free hosting plan.
 
@@ -87,13 +93,47 @@ Prerequisites
 1. Clone the Repository
 
 First, clone the project to your local machine.
-Generated bash
 
  ```bash  
 git clone https://github.com/Pabblusansky/rhythmics.git
 cd rhythmics
  ```
     
+# ✨ Spotify Developer Setup (Required for Local Development)
+
+To run Rhythmics locally, you must register your own application in the Spotify Developer Dashboard. This is required to get the API keys that allow the application to connect to Spotify.
+
+    Go to the Dashboard:
+
+        Navigate to the Spotify Developer Dashboard and log in with your Spotify account.
+
+    Create a New App:
+
+        Click the "Create app" button.
+
+        Give it a name (e.g., "Rhythmics Local") and a description.
+
+        Agree to the terms.
+
+    Get Your Credentials:
+
+        Once your app is created, you will see your Client ID.
+
+        Click on "Settings" to view your Client Secret.
+
+        You will need these two keys for the .env file in the next step.
+
+    Configure the Redirect URI (CRITICAL STEP):
+
+        In your app's "Settings", find the "Redirect URIs" section.
+
+        Add the following URI exactly as written:
+```bash
+http://127.0.0.1:8000/api/auth/spotify/callback
+```
+        Click "Add" and then "Save" at the bottom of the page. This URI must match the one in the backend code to handle the login callback correctly.
+
+Now you have everything you need to set up your local environment.
 
 2. Setup Environment Variables (Backend)
 
@@ -104,7 +144,7 @@ The backend requires a .env file in the root directory for secret keys.
     Open .env and add the following. You can get your Spotify keys from the Spotify Developer Dashboard:
 ```bash  
 # A long, random string for Django's security
-DJANGO_SECRET_KEY=your_very_long_and_super_secret_text_here
+SECRET_KEY=your_very_long_and_super_secret_text_here
 
 # Your credentials from the Spotify Developer Dashboard
 SPOTIFY_CLIENT_ID=your_spotify_client_id
@@ -149,12 +189,14 @@ Install packages:
 ```bash  
 pip install -r requirements.txt
 ```
-
+Return to the root directory:
+```bash
+cd ..
+```
     
 4. Run Everything!
 
-That's it! Now, navigate back to the root directory and run the dev script. This will start both the Django backend and the Angular frontend simultaneously.
-Generated bash
+That's it! Run the dev script! This will start both the Django backend and the Angular frontend simultaneously.
 
 ```bash    
 # Make sure you are in the root rhythmics/ directory
