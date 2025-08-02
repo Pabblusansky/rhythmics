@@ -19,7 +19,7 @@ Rhythmics provides a rich, interactive, and personalized dashboard with a suite 
 
 📈 Genre Analysis: Discover your most listened-to genres with a beautiful, interactive doughnut chart. Get custom, data-driven "Music Insights" that describe your unique taste profile.
 
-🎧 Recently Played History: See a list of your last 50 listened tracks, complete with timestamps.
+🎧 Recently Played History: See a list of your last 50 listened tracks, complete with timestamps. 
 
 🚀 High-Performance Caching: The frontend features a sophisticated caching system that provides a lightning-fast experience on subsequent visits, reducing load times and API calls.
 

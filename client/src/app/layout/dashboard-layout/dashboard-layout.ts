@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -28,9 +28,9 @@ import { SpotifyService } from '../../services/spotify.service';
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.scss'
 })
-export class DashboardLayout {
-  
+export class DashboardLayout implements OnInit {
   sidenavOpened = true;
+  isMobile = false;
   
   navigationItems = [
     { 
@@ -61,6 +61,15 @@ export class DashboardLayout {
   ];
 
   constructor(private spotifyService: SpotifyService, private router: Router) {}
+
+  ngOnInit() {
+    this.checkScreenSize();
+    window.addEventListener('resize', () => this.checkScreenSize());
+  }
+
+  private checkScreenSize() {
+    this.isMobile = window.innerWidth < 768;
+  }
 
   toggleSidenav(): void {
     this.sidenavOpened = !this.sidenavOpened;

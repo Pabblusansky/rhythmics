@@ -1,8 +1,8 @@
-<mat-sidenav-container class="dashboard-container">
-  <!-- Sidenav -->
+<mat-sidenav-container class="dashboard-container" [hasBackdrop]="isMobile">
   <mat-sidenav 
-    mode="side" 
-    [opened]="sidenavOpened" 
+    #sidenav
+    [mode]="isMobile ? 'over' : 'side'" 
+    [opened]="!isMobile && sidenavOpened" 
     class="sidenav"
     fixedInViewport="true">
     
@@ -15,10 +15,11 @@
     <!-- Navigation Menu -->
     <mat-nav-list class="nav-menu">
       <a mat-list-item 
-         *ngFor="let item of navigationItems" 
-         [routerLink]="item.path" 
-         routerLinkActive="active-link"
-         class="nav-item">
+          *ngFor="let item of navigationItems" 
+          [routerLink]="item.path" 
+          routerLinkActive="active-link"
+          class="nav-item"
+          (click)="isMobile && sidenav.close()">
         <mat-icon mat-list-icon>{{ item.icon }}</mat-icon>
         <span mat-line>{{ item.label }}</span>
       </a>
@@ -36,15 +37,31 @@
 
   <!-- Main Content -->
   <mat-sidenav-content class="main-content">
-    <!-- Top Toolbar -->
-    <mat-toolbar class="top-toolbar">
+    <!-- Mobile Toolbar -->
+    <mat-toolbar class="mobile-toolbar" *ngIf="isMobile">
+      <button mat-icon-button class="menu-toggle" (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      
+      <span class="logo">
+        <mat-icon class="logo-icon">music_note</mat-icon>
+        <span class="logo-text">Rhythmics</span>
+      </span>
+      
+      <span class="toolbar-spacer"></span>
+      
+      <button *ngIf="!isMobile" class="profile-btn" routerLink="/dashboard/profile">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <mat-toolbar class="top-toolbar" *ngIf="!isMobile">
       <button mat-icon-button (click)="toggleSidenav()" class="menu-toggle">
         <mat-icon>menu</mat-icon>
       </button>
       
       <span class="toolbar-spacer"></span>
-      
-      <!-- User Profile Button -->
+
       <button mat-icon-button [matMenuTriggerFor]="userMenu" class="profile-btn">
         <mat-icon>account_circle</mat-icon>
       </button>
@@ -60,7 +77,7 @@
         </button>
       </mat-menu>
     </mat-toolbar>
-    
+
     <!-- Page Content -->
     <div class="page-content">
       <router-outlet></router-outlet>

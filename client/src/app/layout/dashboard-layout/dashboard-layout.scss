@@ -158,7 +158,11 @@
 @media (max-width: 768px) {
   .dashboard-container {
     .sidenav {
-      width: 240px;
+      width: 280px;
+      
+      &.mat-drawer-opened + .mat-drawer-backdrop {
+        background-color: rgba(0, 0, 0, 0.6);
+      }
     }
     
     .main-content {
@@ -167,13 +171,17 @@
       }
     }
   }
+  
+  .mat-drawer-backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
 }
 
 @media (max-width: 480px) {
   .dashboard-container {
     .sidenav {
-      width: 100%;
-      position: fixed;
+      width: 280px;
     }
   }
 }
