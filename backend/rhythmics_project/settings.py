@@ -115,35 +115,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:4200", 
-    "http://localhost:4200",
-]
+# ==============================================================================
+# CORS / CSRF Settings
+# ==============================================================================
 
-FRONTEND_URL = os.getenv('FRONTEND_URL')
-if FRONTEND_URL:
-    clean_frontend_url = FRONTEND_URL.rstrip('/')
-    CORS_ALLOWED_ORIGINS.append(clean_frontend_url)
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:4200').split(',')
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:4200').split(',')
 
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.*\.netlify\.app$",  # Netlify 
-    r"^https://.*\.onrender\.com$",  # Render
-]
-
-CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOW_CREDENTIALS = True
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:4200",
-    "http://localhost:4200",
-]
-
-if FRONTEND_URL:
-    clean_frontend_url = FRONTEND_URL.rstrip('/')
-    CSRF_TRUSTED_ORIGINS.append(clean_frontend_url)
-
-if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
 
 CORS_ALLOWED_HEADERS = [
     'accept',
@@ -163,18 +142,16 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_DOMAIN = None
 CSRF_COOKIE_SAMESITE = 'Lax'
 
+# ==============================================================================
 # Security settings for production
+# ==============================================================================
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    
-    # Cross-domain cookie settings for Netlify frontend + Render backend
     SESSION_COOKIE_SAMESITE = 'None'
     CSRF_COOKIE_SAMESITE = 'None'
-    
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     USE_X_FORWARDED_HOST = True
-    
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
