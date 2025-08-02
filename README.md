@@ -11,23 +11,23 @@ Welcome to the Rhythmics project! This is a full-stack web application designed 
 
 Rhythmics provides a rich, interactive, and personalized dashboard with a suite of analytical tools:
 
-📊 Dynamic Top Charts: View your top tracks and artists, with interactive filters for different time ranges:
+📊 **Dynamic Top Charts**: View your top tracks and artists, with interactive filters for different time ranges:
 
 - Last Month (short_term)
 - Last 6 Months (medium_term)
 - All Time (long_term)
 
-📈 Genre Analysis: Discover your most listened-to genres with a beautiful, interactive doughnut chart. Get custom, data-driven "Music Insights" that describe your unique taste profile.
+📈 **Genre Analysis**: Discover your most listened-to genres with a beautiful, interactive doughnut chart. Get custom, data-driven "Music Insights" that describe your unique taste profile.
 
-🎧 Recently Played History: See a list of your last 50 listened tracks, complete with timestamps. 
+🎧 **Recently Played History**: See a list of your last 50 listened tracks, complete with timestamps. 
 
-🚀 High-Performance Caching: The frontend features a sophisticated caching system that provides a lightning-fast experience on subsequent visits, reducing load times and API calls.
+🚀 **High-Performance Caching**: The frontend features a sophisticated caching system that provides a lightning-fast experience on subsequent visits, reducing load times and API calls.
 
-🔐 Privacy & Data Control: A dedicated privacy settings panel allows you to control what data is displayed and stored. Includes a secure Logout and a Delete My Data function that completely removes your user and token information from our database.
+🔐 **Privacy & Data Control**: A dedicated privacy settings panel allows you to control what data is displayed and stored. Includes a secure Logout and a Delete My Data function that completely removes your user and token information from our database.
 
-🔒 Secure Authentication: Full, secure OAuth 2.0 authentication flow with Spotify, including automatic token refresh logic on the backend to ensure you stay logged in.
+🔒 **Secure Authentication**: Full, secure OAuth 2.0 authentication flow with Spotify, including automatic token refresh logic on the backend to ensure you stay logged in.
 
-📱 Responsive Design: A sleek, modern interface that looks great on both desktop and mobile devices.
+📱 **Responsive Design**: A sleek, modern interface that looks great on both desktop and mobile devices.
 
 # 🚀 Live Demo & Deployment
 
@@ -41,7 +41,13 @@ Live version details:
 - Backend (Django): Deployed on Render.com
 
 Feel free to connect your Spotify account and explore your stats.
+# ⚠️ Live Demo Access & User Slots
 
+Due to recent changes in the Spotify API Developer Policy (as of May 2025), new applications created by individual developers(thanks Spotify) are restricted to a limited number of users in "Development Mode". This application currently has a hard limit of 25 authorized users.
+
+What this means:
+- Public access is limited. When you click "Connect with Spotify", the login will only succeed if your Spotify account has been manually added to the app's allowlist. Otherwise, you will likely see a 403 Forbidden or Failed to retrieve user info error after logging into Spotify.
+- Want to **test it**? If you are a recruiter, a potential employer, or just a developer who is genuinely interested in testing the full functionality of Rhythmics, please open a new GitHub Issue requesting access. I will gladly add you to one of the available user slots.
 # ⚠️Deployment Status & Known Limitations
 
     Server Spin-Down (Cold Start): The backend is hosted on Render's free tier. If the server is inactive for 15 minutes, it will "spin down". The first request to an inactive server (e.g., login or fetching data) may experience a delay of 30-50 seconds while the instance wakes up. Subsequent requests will be fast. This is a characteristic of the free hosting plan.
