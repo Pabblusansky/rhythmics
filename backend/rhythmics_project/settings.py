@@ -158,3 +158,8 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}

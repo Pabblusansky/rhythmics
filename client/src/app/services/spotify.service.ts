@@ -18,7 +18,6 @@ export class SpotifyService {
   getUserProfile(): Observable<any> {
     const cacheKey = 'user_profile';
     
-    // Check cache first
     const cached = this.cacheService.get(cacheKey);
     if (cached) {
       return new Observable(observer => {
@@ -27,10 +26,8 @@ export class SpotifyService {
       });
     }
 
-    // If not in cache, fetch from API
-    return this.http.get(`${this.backendUrl}/me`, { withCredentials: true }).pipe(
+    return this.http.get(`${this.backendUrl}/me`).pipe(
       tap(data => {
-        // Cache for 6 hours
         this.cacheService.set(cacheKey, data, 6);
       })
     );
@@ -61,7 +58,6 @@ export class SpotifyService {
 
     const cacheKey = `top_tracks_${timeRange}_${limit}`;
     
-    // Check cache first
     const cached = this.cacheService.get(cacheKey);
     if (cached) {
       return new Observable(observer => {
@@ -75,11 +71,9 @@ export class SpotifyService {
       .set('limit', limit.toString());
 
     return this.http.get(`${this.backendUrl}/top-tracks`, { 
-      withCredentials: true,
       params: params
     }).pipe(
       tap(data => {
-        // Cache for 2 hours
         this.cacheService.set(cacheKey, data, 2);
       })
     );
@@ -95,7 +89,6 @@ export class SpotifyService {
 
     const cacheKey = `top_artists_${timeRange}_${limit}`;
     
-    // Check cache first
     const cached = this.cacheService.get(cacheKey);
     if (cached) {
       return new Observable(observer => {
@@ -109,11 +102,9 @@ export class SpotifyService {
       .set('limit', limit.toString());
 
     return this.http.get(`${this.backendUrl}/top-artists`, { 
-      withCredentials: true,
       params: params
     }).pipe(
       tap(data => {
-        // Cache for 2 hours
         this.cacheService.set(cacheKey, data, 2);
       })
     );
@@ -129,7 +120,6 @@ export class SpotifyService {
 
     const cacheKey = 'top_genres_chart';
     
-    // Check cache first
     const cached = this.cacheService.get(cacheKey);
     if (cached) {
       return new Observable(observer => {
@@ -138,9 +128,8 @@ export class SpotifyService {
       });
     }
 
-    return this.http.get(`${this.backendUrl}/top-genres`, { withCredentials: true }).pipe(
+    return this.http.get(`${this.backendUrl}/top-genres`).pipe(
       tap(data => {
-        // Cache for 1 hour
         this.cacheService.set(cacheKey, data, 1);
       })
     );
@@ -172,7 +161,7 @@ export class SpotifyService {
       }
     }
 
-    return this.http.get(`${this.backendUrl}/recently-played`, { withCredentials: true }).pipe(
+    return this.http.get(`${this.backendUrl}/recently-played`).pipe(
       tap(data => {
         this.cacheService.set(cacheKey, data, 0.033);
       })
@@ -180,10 +169,9 @@ export class SpotifyService {
   }
   
   getCurrentlyPlaying(): Observable<any> {
-    return this.http.get(`${this.backendUrl}/currently-playing`, { withCredentials: true });
+    return this.http.get(`${this.backendUrl}/currently-playing`);
   }
   
-  // Method to force refresh all data
   refreshAllData(): void {
     this.cacheService.clear();
     console.log('All cached data cleared - fresh data will be fetched');
@@ -195,15 +183,13 @@ export class SpotifyService {
       'X-CSRFToken': this.getCsrfToken()
     });
     return this.http.post(`${this.backendUrl}/delete-data`, {}, { 
-      withCredentials: true, 
       headers 
     });
   }
   
   logout(): Observable<any> {
-    // Clear cache on logout
     this.cacheService.clear();
-    return this.http.get(`${this.backendUrl}/logout`, { withCredentials: true });
+    return this.http.get(`${this.backendUrl}/logout`);
   }
 
   private getCsrfToken(): string {

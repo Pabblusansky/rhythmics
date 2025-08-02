@@ -4,7 +4,7 @@ from rest_framework.response import Response
 import os
 import requests
 import base64
-from django.contrib.auth import login, logout
+from django.contrib.auth import logout
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
@@ -15,6 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.conf import settings
 import logging
+from rest_framework_simplejwt.tokens import RefreshToken
+from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
 
@@ -142,10 +144,18 @@ class SpotifyCallback(APIView):
                 }
             )
 
-            login(request, django_user)
+            refresh = RefreshToken.for_user(django_user)
+            jwt_access_token = str(refresh.access_token)
+            
+            redirect_url = f"{frontend_url}/auth/callback"
+            
+            params = {
+                'access_token': jwt_access_token,
+                'refresh_token': str(refresh)
+            }
+            
             logger.info(f"User logged in successfully: {spotify_id}")
-
-            return redirect(f'{frontend_url}/dashboard')
+            return redirect(f"{redirect_url}?{urlencode(params)}")
             
         except Exception as e:
             logger.error(f"Unexpected error in SpotifyCallback: {str(e)}", exc_info=True)
@@ -263,7 +273,6 @@ class TopArtists(APIView):
         if response.status_code != 200:
             return Response({"error": "Failed to retrieve top artists", "details": response.json()}, status=response.status_code)
         
-        # Processing the response
         spotify_data = response.json()
         processed_artists = []
         
@@ -292,8 +301,12 @@ class TopArtists(APIView):
             'total': len(processed_artists),
             'time_range': time_range
         })
+
 class TopGenres(APIView):
     def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({"error": "Not authenticated"}, status=401)
+            
         token = get_user_token(request.user)
         if not token:
             return Response({"error": "Token not available"}, status=401)
@@ -407,7 +420,7 @@ class RecentlyPlayed(APIView):
         
         for item in spotify_data.get('items', []):
             track = item.get('track', {})
-            played_at = item.get('played_at')  # utc
+            played_at = item.get('played_at')
             
             images = track.get('album', {}).get('images', [])
             image_url = None
@@ -426,7 +439,7 @@ class RecentlyPlayed(APIView):
                     'image_url': image_url
                 },
                 'duration_ms': track.get('duration_ms'),
-                'played_at': played_at,  # Played at time in UTC
+                'played_at': played_at,
                 'spotify_url': track.get('external_urls', {}).get('spotify'),
                 'popularity': track.get('popularity', 0)
             })
@@ -450,7 +463,6 @@ class CurrentlyPlaying(APIView):
 
         response = requests.get(spotify_api_url, headers=headers)
         
-        # 204 = nothing playing
         if response.status_code == 204:
             return Response({"is_playing": False, "item": None})
         
@@ -464,7 +476,6 @@ class CurrentlyPlaying(APIView):
             
         track = data.get('item', {})
         
-        # Process image
         images = track.get('album', {}).get('images', [])
         image_url = None
         if images:

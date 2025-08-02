@@ -8,6 +8,7 @@ import { Tracks } from './pages/tracks/tracks';
 import { Genres } from './pages/genres/genres';
 import { Artists } from './pages/artists/artists';
 import { RecentlyPlayed } from './pages/recently-played/recently-played';
+import { AuthCallbackComponent } from './pages/auth-callback/auth-callback';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, 
@@ -23,7 +24,7 @@ export const routes: Routes = [
       { path: 'recently-played', component: RecentlyPlayed }, 
       { path: 'tracks', component: Tracks },
       { path: 'artists', component: Artists },
-
+      { path: 'auth/callback', component: AuthCallbackComponent }
     ]
   },
 ];
