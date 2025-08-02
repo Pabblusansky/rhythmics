@@ -3,12 +3,12 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
 import { tap } from 'rxjs/operators'; 
 import { CacheService } from './cache.service'; 
-
+import { environment } from '../../environments/environment'; 
 @Injectable({
   providedIn: 'root'
 })
 export class SpotifyService {
-  private backendUrl = 'http://127.0.0.1:8000/api';
+  private backendUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,
