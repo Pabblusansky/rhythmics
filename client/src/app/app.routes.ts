@@ -13,6 +13,7 @@ import { AuthCallbackComponent } from './pages/auth-callback/auth-callback';
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' }, 
   { path: 'home', component: Home },
+  { path: 'auth/callback', component: AuthCallbackComponent },
   { 
     path: 'dashboard', 
     component: DashboardLayout,
@@ -24,7 +25,6 @@ export const routes: Routes = [
       { path: 'recently-played', component: RecentlyPlayed }, 
       { path: 'tracks', component: Tracks },
       { path: 'artists', component: Artists },
-      { path: 'auth/callback', component: AuthCallbackComponent }
     ]
   },
 ];
