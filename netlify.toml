@@ -1,0 +1,11 @@
+[build]
+  command = "ng build"
+  
+  publish = "dist/rhythmics-client/browser/"
+
+  base = "client/"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
