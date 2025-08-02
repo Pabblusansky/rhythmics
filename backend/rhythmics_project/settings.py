@@ -122,21 +122,25 @@ CORS_ALLOWED_ORIGINS = [
 
 FRONTEND_URL = os.getenv('FRONTEND_URL')
 if FRONTEND_URL:
-    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+    clean_frontend_url = FRONTEND_URL.rstrip('/')
+    CORS_ALLOWED_ORIGINS.append(clean_frontend_url)
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.netlify\.app$",  # Netlify 
     r"^https://.*\.onrender\.com$",  # Render
 ]
 
+CORS_URLS_REGEX = r"^/api/.*$"
+CORS_ALLOW_CREDENTIALS = True
+
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:4200",
     "http://localhost:4200",
 ]
 
-# Добавляем продакшен домены в CSRF_TRUSTED_ORIGINS
 if FRONTEND_URL:
-    CSRF_TRUSTED_ORIGINS.append(FRONTEND_URL)
+    clean_frontend_url = FRONTEND_URL.rstrip('/')
+    CSRF_TRUSTED_ORIGINS.append(clean_frontend_url)
 
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
