@@ -128,11 +128,42 @@ class TopTracks(APIView):
         params = {'time_range': time_range, 'limit': limit}
 
         response = requests.get(spotify_api_url, headers=headers, params=params)
-
+        
         if response.status_code != 200:
             return Response({"error": "Failed to retrieve top tracks", "details": response.json()}, status=response.status_code)
         
-        return Response(response.json())
+        spotify_data = response.json()
+        processed_tracks = []
+        
+        for item in spotify_data.get('items', []):
+            images = item.get('album', {}).get('images', [])
+            image_url = None
+            if images:
+                if len(images) > 1:
+                    image_url = images[1].get('url') 
+                else:
+                    image_url = images[0].get('url')
+            
+            processed_tracks.append({
+                'id': item.get('id'),
+                'name': item.get('name'),
+                'artists': [{'name': artist.get('name')} for artist in item.get('artists', [])],
+                'album': {
+                    'name': item.get('album', {}).get('name'),
+                    'images': item.get('album', {}).get('images', [])
+                },
+                'duration_ms': item.get('duration_ms'),
+                'popularity': item.get('popularity', 0),
+                'external_urls': item.get('external_urls', {}),
+                'preview_url': item.get('preview_url'),  
+                'has_preview': item.get('preview_url') is not None 
+            })
+
+        return Response({
+            'items': processed_tracks,
+            'total': len(processed_tracks),
+            'time_range': time_range
+        })
     
 class TopArtists(APIView):
     def get(self, request, *args, **kwargs):

@@ -35,15 +35,37 @@
 
     <!-- Tracks Grid -->
     <div *ngIf="!isLoading && topTracks.length > 0" class="tracks-grid">
-      <div class="track-item" *ngFor="let track of topTracks; let i = index">
+      <div class="track-item" *ngFor="let track of topTracks; let i = index"
+           [class.no-preview]="!track.has_preview"> 
+
         <div class="track-rank">{{ i + 1 }}</div>
         
-        <div class="track-image" (click)="openInSpotify(track)">
+        <div class="track-image">
           <img [src]="track.album.images[1]?.url || track.album.images[0]?.url" 
                [alt]="track.album.name"
                loading="lazy">
-          <div class="play-overlay">
-            <mat-icon>play_arrow</mat-icon>
+          
+          <div class="play-overlay" *ngIf="track.has_preview">
+            <button class="play-button" 
+                    (click)="togglePlay($event, track)"
+                    mat-icon-button
+                    matTooltip="{{ playerState.isPlaying && playerState.currentTrackId === track.id ? 'Pause Preview' : 'Play Preview' }}">
+              
+              <mat-icon *ngIf="playerState.isPlaying && playerState.currentTrackId === track.id">
+                pause_circle_filled
+              </mat-icon>
+
+              <mat-icon *ngIf="!playerState.isPlaying || playerState.currentTrackId !== track.id">
+                play_circle_filled
+              </mat-icon>
+            </button>
+          </div>
+
+          <div class="no-preview-overlay" *ngIf="!track.has_preview">
+            <div class="no-preview-indicator">
+              <mat-icon matTooltip="Preview not available for this track">music_off</mat-icon>
+              <span>No Preview</span>
+            </div>
           </div>
         </div>
         
@@ -61,6 +83,15 @@
           <div class="track-duration">{{ formatDuration(track.duration_ms) }}</div>
         </div>
         
+        <div class="track-actions">
+          <button mat-stroked-button 
+                  class="spotify-btn"
+                  (click)="openInSpotify(track)"
+                  matTooltip="Open in Spotify">
+            <mat-icon class="spotify-icon">open_in_new</mat-icon>
+            <span class="spotify-text">Spotify</span>
+          </button>
+        </div>
 
       </div>
     </div>
