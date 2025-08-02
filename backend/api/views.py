@@ -13,19 +13,25 @@ from .utils import get_user_token
 from collections import Counter 
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.conf import settings
 
 class SpotifyLogin(APIView):
     def get(self, request, *args, **kwargs):
+        if settings.DEBUG:
+            redirect_uri = 'http://127.0.0.1:8000/api/auth/spotify/callback'
+            frontend_url = 'http://127.0.0.1:4200'
+        else:
+            redirect_uri = f'https://{os.getenv("RENDER_EXTERNAL_HOSTNAME", "your-backend.onrender.com")}/api/auth/spotify/callback'
+            frontend_url = os.getenv('FRONTEND_URL', 'https://your-frontend.netlify.app')
         
         auth_params = {
             'response_type': 'code',
             'client_id': os.getenv('SPOTIFY_CLIENT_ID'),
             'scope': 'user-read-private user-read-email user-top-read playlist-read-private user-read-recently-played user-read-playback-state',
-            'redirect_uri': 'http://127.0.0.1:8000/api/auth/spotify/callback'
+            'redirect_uri': redirect_uri
         }
 
         params_string = '&'.join([f"{key}={value}" for key, value in auth_params.items()])
-        
         auth_url = f"https://accounts.spotify.com/authorize?{params_string}"
         
         return redirect(auth_url)
@@ -36,12 +42,20 @@ class SpotifyCallback(APIView):
         if not auth_code:
             return Response({"error": "Authorization code not provided"}, status=400)
 
+        if settings.DEBUG:
+            redirect_uri = 'http://127.0.0.1:8000/api/auth/spotify/callback'
+            frontend_url = 'http://127.0.0.1:4200'
+        else:
+            redirect_uri = f'https://{os.getenv("RENDER_EXTERNAL_HOSTNAME", "your-backend.onrender.com")}/api/auth/spotify/callback'
+            frontend_url = os.getenv('FRONTEND_URL', 'https://your-frontend.netlify.app')
+
         token_url = 'https://accounts.spotify.com/api/token'
         payload = {
             'grant_type': 'authorization_code',
             'code': auth_code,
-            'redirect_uri': 'http://127.0.0.1:8000/api/auth/spotify/callback'
+            'redirect_uri': redirect_uri
         }
+        
         client_id = os.getenv('SPOTIFY_CLIENT_ID')
         client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
         auth_header_str = f"{client_id}:{client_secret}"
@@ -80,7 +94,7 @@ class SpotifyCallback(APIView):
         #  LOGIN 
         login(request, django_user)
 
-        return redirect('http://127.0.0.1:4200/dashboard')
+        return redirect(f'{frontend_url}/dashboard')
 
 class UserProfile(APIView):
     def get(self, request, *args, **kwargs):
