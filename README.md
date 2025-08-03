@@ -48,7 +48,7 @@ Due to recent changes in the Spotify API Developer Policy (as of May 2025), new 
 
 What this means:
 - Public access is limited. When you click "Connect with Spotify", the login will only succeed if your Spotify account has been manually added to the app's allowlist. Otherwise, you will likely see a 403 Forbidden or Failed to retrieve user info error after logging into Spotify.
-- Want to **test it**? If you are a recruiter, a potential employer, or just a developer who is genuinely interested in testing the full functionality of Rhythmics, please open a new [GitHub Issue](https://github.com/Pabblusansky/rhythmics/issues/new?title=Live%20Demo%20Access%20Request) requesting access. I will gladly add you to one of the available user slots.
+- Want to **test it**? If you are a recruiter, a potential employer, or just a developer who is genuinely interested in testing the full functionality of Rhythmics, please open a new [GitHub Issue](https://github.com/Pabblusansky/rhythmics/issues/new?title=Live%20Demo%20Access%20Request) requesting access (Don't forget to specify your name and email adress). I will gladly add you to one of the available user slots.
 # ⚠️Deployment Status & Known Limitations
 
     Server Spin-Down (Cold Start): The backend is hosted on Render's free tier. If the server is inactive for 15 minutes, it will "spin down". The first request to an inactive server (e.g., login or fetching data) may experience a delay of 30-50 seconds while the instance wakes up. Subsequent requests will be fast. This is a characteristic of the free hosting plan.
