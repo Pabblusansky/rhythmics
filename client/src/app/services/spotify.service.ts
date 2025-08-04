@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/internal/Observable';
-import { tap } from 'rxjs/operators'; 
+import { tap, finalize } from 'rxjs/operators'; 
 import { CacheService } from './cache.service'; 
 import { environment } from '../../environments/environment'; 
 @Injectable({
@@ -188,8 +188,14 @@ export class SpotifyService {
   }
   
   logout(): Observable<any> {
-    this.cacheService.clear();
-    return this.http.get(`${this.backendUrl}/logout`);
+    return this.http.post('/api/logout/', {}).pipe(
+      finalize(() => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_profile');
+        
+      })
+    );
   }
 
   private getCsrfToken(): string {

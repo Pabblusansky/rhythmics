@@ -12,9 +12,28 @@ interface CacheItem {
 })
 export class CacheService {
   private readonly CACHE_PREFIX = 'rhythmics_cache_';
+  private readonly USER_CACHE_PREFIX = 'rhythmics_user_cache_';
 
   constructor() {
     this.cleanExpiredItems();
+  }
+
+  private getCurrentUserId(): string {
+    const userProfile = localStorage.getItem('user_profile');
+    if (userProfile) {
+      try {
+        const parsed = JSON.parse(userProfile);
+        return parsed.id || 'unknown_user';
+      } catch {
+        return 'unknown_user';
+      }
+    }
+    return 'unknown_user';
+  }
+
+  private createUserKey(key: string): string {
+    const userId = this.getCurrentUserId();
+    return `${this.USER_CACHE_PREFIX}${userId}_${key}`;
   }
 
   set(key: string, data: any, expiresInHours: number = 24): void {
@@ -32,8 +51,9 @@ export class CacheService {
     };
 
     try {
-      localStorage.setItem(this.CACHE_PREFIX + key, JSON.stringify(item));
-      console.log(`Cached ${key} for ${expiresInHours} hours`);
+      const userKey = this.createUserKey(key);
+      localStorage.setItem(userKey, JSON.stringify(item));
+      console.log(`Cached ${key} for user ${this.getCurrentUserId()} for ${expiresInHours} hours`);
     } catch (error) {
       console.warn('Failed to cache data:', error);
     }
@@ -47,7 +67,8 @@ export class CacheService {
     }
 
     try {
-      const cached = localStorage.getItem(this.CACHE_PREFIX + key);
+      const userKey = this.createUserKey(key);
+      const cached = localStorage.getItem(userKey);
       if (!cached) return null;
 
       const item: CacheItem = JSON.parse(cached);
@@ -66,7 +87,7 @@ export class CacheService {
         return null;
       }
 
-      console.log(`Cache hit for ${key}`);
+      console.log(`Cache hit for ${key} (user: ${this.getCurrentUserId()})`);
       return item.data;
     } catch (error) {
       console.warn('Failed to read cache:', error);
@@ -75,25 +96,42 @@ export class CacheService {
   }
 
   remove(key: string): void {
-    localStorage.removeItem(this.CACHE_PREFIX + key);
+    const userKey = this.createUserKey(key);
+    localStorage.removeItem(userKey);
   }
 
   clear(): void {
+    const userId = this.getCurrentUserId();
     const keys = Object.keys(localStorage).filter(key => 
-      key.startsWith(this.CACHE_PREFIX)
+      key.startsWith(`${this.USER_CACHE_PREFIX}${userId}_`)
     );
     
     keys.forEach(key => localStorage.removeItem(key));
-    console.log('All cache cleared');
+    console.log(`All cache cleared for user ${userId}`);
+  }
+
+  clearCurrentUserCache(): void {
+    this.clear();
+  }
+
+  // Admin methods for managing all users' cache
+  clearAllUsersCache(): void {
+    const keys = Object.keys(localStorage).filter(key => 
+      key.startsWith(this.USER_CACHE_PREFIX) || key.startsWith(this.CACHE_PREFIX)
+    );
+    
+    keys.forEach(key => localStorage.removeItem(key));
+    console.log('All users cache cleared');
   }
 
   clearByType(type: 'tracks' | 'artists' | 'genres' | 'profile'): void {
+    const userId = this.getCurrentUserId();
     const keys = Object.keys(localStorage).filter(key => 
-      key.startsWith(this.CACHE_PREFIX) && key.includes(type)
+      key.startsWith(`${this.USER_CACHE_PREFIX}${userId}_`) && key.includes(type)
     );
     
     keys.forEach(key => localStorage.removeItem(key));
-    console.log(`${type} cache cleared`);
+    console.log(`${type} cache cleared for user ${userId}`);
   }
 
   clearOldCache(olderThanHours: number = 24): void {
@@ -147,8 +185,9 @@ export class CacheService {
   }
 
   getCacheStats(): { totalItems: number; totalSize: number; oldestItem: number | null } {
+    const userId = this.getCurrentUserId();
     const keys = Object.keys(localStorage).filter(key => 
-      key.startsWith(this.CACHE_PREFIX)
+      key.startsWith(`${this.USER_CACHE_PREFIX}${userId}_`)
     );
 
     let totalSize = 0;
