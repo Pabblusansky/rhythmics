@@ -188,7 +188,7 @@ export class SpotifyService {
   }
   
   logout(): Observable<any> {
-    return this.http.post(`${this.backendUrl}/logout/`, {}).pipe(
+    return this.http.post(`${this.backendUrl}/logout`, {}).pipe(
       finalize(() => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
