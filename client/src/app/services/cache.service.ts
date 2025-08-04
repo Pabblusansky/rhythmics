@@ -23,12 +23,39 @@ export class CacheService {
     if (userProfile) {
       try {
         const parsed = JSON.parse(userProfile);
-        return parsed.id || 'unknown_user';
-      } catch {
-        return 'unknown_user';
+        if (parsed.id) {
+          return parsed.id;
+        }
+      } catch (error) {
+        console.warn('Failed to parse user_profile from localStorage');
       }
     }
-    return 'unknown_user';
+    
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
+      try {
+        const payload = JSON.parse(atob(accessToken.split('.')[1]));
+        if (payload.sub || payload.user_id || payload.id) {
+          return payload.sub || payload.user_id || payload.id;
+        }
+      } catch (error) {
+      }
+      
+      return 'user_' + this.simpleHash(accessToken);
+    }
+    
+    console.warn('No user identification found, using anonymous user');
+    return 'anonymous_user';
+  }
+
+  private simpleHash(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash).toString(36);
   }
 
   private createUserKey(key: string): string {
